@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="FinanceMobile.Android/FinanceMobile.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="FinanceMobile.Browser/FinanceMobile.Browser.csproj" />
+  <Project Path="FinanceMobile.Desktop/FinanceMobile.Desktop.csproj" />
+  <Project Path="FinanceMobile.iOS/FinanceMobile.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="FinanceMobile/FinanceMobile.csproj" />
+</Solution>
