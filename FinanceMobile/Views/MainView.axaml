@@ -7,20 +7,29 @@
                 x:Class="FinanceMobile.Views.MainView"
                 x:DataType="vm:MainViewModel">
 	<Grid>
-		<Button Command="{Binding ToggleGreetingCommand}"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center"
-				Background="Transparent"
-				BorderThickness="0"
-				Padding="10"
-				Cursor="Hand">
+		<StackPanel HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					Spacing="20">
 
-			<!-- Содержимое кнопки - это наш текст -->
-			<TextBlock Text="{Binding WelcomeMessage}"
-					   TextAlignment="Center"
-					   TextWrapping="Wrap"
-					   FontSize="24"
-					   FontWeight="SemiBold"/>
-		</Button>
+			<!-- Картинка кота со скруглёнными границами -->
+			<Border Width="200" Height="200" CornerRadius="100" ClipToBounds="True">
+				<Image Source="avares://FinanceMobile/Assets/cat.png"
+					   Stretch="UniformToFill"/>
+			</Border>
+
+			<!-- Кнопка-текст -->
+			<Button Command="{Binding ToggleGreetingCommand}"
+					Background="Transparent"
+					BorderThickness="0"
+					Padding="10"
+					Cursor="Hand">
+
+				<TextBlock Text="{Binding WelcomeMessage}"
+						   TextAlignment="Center"
+						   TextWrapping="Wrap"
+						   FontSize="24"
+						   FontWeight="SemiBold"/>
+			</Button>
+		</StackPanel>
 	</Grid>
 </UserControl>
