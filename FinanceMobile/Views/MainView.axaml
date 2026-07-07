@@ -11,6 +11,12 @@
 					VerticalAlignment="Center"
 					Spacing="20">
 
+			<TextBlock Text="{Binding LastTableOut}"
+				TextAlignment="Center"
+				TextWrapping="Wrap"
+				FontSize="16"
+				FontWeight="SemiBold"/>
+			
 			<!-- Картинка кота со скруглёнными границами -->
 			<Border Width="200" Height="200" CornerRadius="100" ClipToBounds="True">
 				<Image Source="avares://FinanceMobile/Assets/cat.png"

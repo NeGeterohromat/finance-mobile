@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 
 namespace FinanceMobile.ViewModels
 {
@@ -35,6 +36,10 @@ namespace FinanceMobile.ViewModels
         [ObservableProperty] private string _cell41 = "";
         [ObservableProperty] private string _cell42 = "";
 
+
+        [ObservableProperty]
+        private string _lastTableOut = "";
+
         // Этот атрибут автоматически создаст публичное свойство ToggleGreetingCommand
         [RelayCommand]
         private void ToggleGreeting()
@@ -43,6 +48,69 @@ namespace FinanceMobile.ViewModels
             WelcomeMessage = WelcomeMessage == OriginalText
                 ? AlternateText
                 : OriginalText;
+        }
+
+        // Этот метод вызывается автоматически при изменении Cell00
+        // Имя метода всегда: On<ИмяСвойства>Changed
+        partial void OnCell00Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell01Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell02Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell10Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell11Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell12Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell20Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell21Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell22Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell30Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell31Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell32Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell40Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell41Changed(string value)
+        {
+            LastTableOut = value;
+        }
+        partial void OnCell42Changed(string value)
+        {
+            LastTableOut = value;
         }
     }
 }
