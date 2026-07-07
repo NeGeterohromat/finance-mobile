@@ -30,6 +30,101 @@
 						   FontSize="24"
 						   FontWeight="SemiBold"/>
 			</Button>
+			
+			<!-- Таблица 3x5 с редактируемыми ячейками -->
+			<Border Grid.Row="2"
+					BorderBrush="Gray"
+					BorderThickness="1"
+					Margin="0,0,0,10">
+				<Grid ColumnDefinitions="*,*,*"
+					  RowDefinitions="*,*,*,*,*">
+
+					<!-- Строка 1 -->
+					<TextBox Grid.Row="0" Grid.Column="0"
+							 Text="{Binding Cell00, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="0" Grid.Column="1"
+							 Text="{Binding Cell01, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="0" Grid.Column="2"
+							 Text="{Binding Cell02, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+
+					<!-- Строка 2 -->
+					<TextBox Grid.Row="1" Grid.Column="0"
+							 Text="{Binding Cell10, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="1" Grid.Column="1"
+							 Text="{Binding Cell11, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="1" Grid.Column="2"
+							 Text="{Binding Cell12, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+
+					<!-- Строка 3 -->
+					<TextBox Grid.Row="2" Grid.Column="0"
+							 Text="{Binding Cell20, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="2" Grid.Column="1"
+							 Text="{Binding Cell21, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="2" Grid.Column="2"
+							 Text="{Binding Cell22, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+
+					<!-- Строка 4 -->
+					<TextBox Grid.Row="3" Grid.Column="0"
+							 Text="{Binding Cell30, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="3" Grid.Column="1"
+							 Text="{Binding Cell31, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="3" Grid.Column="2"
+							 Text="{Binding Cell32, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+
+					<!-- Строка 5 -->
+					<TextBox Grid.Row="4" Grid.Column="0"
+							 Text="{Binding Cell40, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="4" Grid.Column="1"
+							 Text="{Binding Cell41, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+					<TextBox Grid.Row="4" Grid.Column="2"
+							 Text="{Binding Cell42, Mode=TwoWay}"
+							 Margin="1"
+							 HorizontalContentAlignment="Center"
+							 VerticalContentAlignment="Center"/>
+				</Grid>
+			</Border>
 		</StackPanel>
 	</Grid>
 </UserControl>
