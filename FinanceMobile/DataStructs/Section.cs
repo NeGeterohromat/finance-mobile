@@ -7,7 +7,7 @@ namespace FinanceMobile.DataStructs
 {
     public class Section
     {
-        private const string totalsName = "totals";
+        public const string TotalsName = "totals";
         public string Name { get; private set; }
 
         public int WeeksCount { get; private set; }
@@ -26,7 +26,7 @@ namespace FinanceMobile.DataStructs
                 WeeksStart = DateTime.Today;
             else
                 WeeksStart = (DateTime)weeksStart;
-            totals = new Category(weeksCount, totalsName, WeeksStart);
+            totals = new Category(weeksCount, TotalsName, WeeksStart);
         }
 
         public void AddCategory(string name) 
@@ -39,7 +39,7 @@ namespace FinanceMobile.DataStructs
         {
             get 
             { 
-                if (name == totalsName) 
+                if (name == TotalsName) 
                     return totals[week];
                 return categories[name][week];
             }
