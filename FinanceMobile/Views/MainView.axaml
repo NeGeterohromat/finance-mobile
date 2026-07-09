@@ -36,6 +36,19 @@
 						   FontSize="24"
 						   FontWeight="SemiBold"/>
 			</Button>
+
+			<Button Command="{Binding GetFromDBCommand}"
+		Background="Transparent"
+		BorderThickness="0"
+		Padding="10"
+		Cursor="Hand">
+
+				<TextBlock Text="FromDB"
+						   TextAlignment="Center"
+						   TextWrapping="Wrap"
+						   FontSize="24"
+						   FontWeight="SemiBold"/>
+			</Button>
 			
 			<!-- Таблица 3x5 с редактируемыми ячейками -->
 			<Border Grid.Row="2"

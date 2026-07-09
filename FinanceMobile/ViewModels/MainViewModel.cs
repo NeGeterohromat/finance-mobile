@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FinanceMobile.Databases;
+using FinanceMobile.DataStructs;
 using System;
 
 namespace FinanceMobile.ViewModels
@@ -36,9 +38,28 @@ namespace FinanceMobile.ViewModels
         [ObservableProperty] private string _cell41 = "";
         [ObservableProperty] private string _cell42 = "";
 
+        private DatabaseService dbs = DatabaseService.DatabaseServiceInstance;
+
 
         [ObservableProperty]
         private string _lastTableOut = "";
+
+        [RelayCommand]
+        private void GetFromDB()
+        {
+            var data = dbs.LoadAllCells();
+
+            Week w1 = new Week() { StartDay = DateTime.Today, EndDay = DateTime.Today.AddDays(6) };
+            Week w2 = new Week() { StartDay = DateTime.Today.AddDays(7), EndDay = DateTime.Today.AddDays(7 + 6) };
+            Week w3 = new Week() { StartDay = DateTime.Today.AddDays(14), EndDay = DateTime.Today.AddDays(14 + 6) };
+
+            Cell00 = data["sect1"]["c1"][w1.StartDay].ToString();
+            Cell01 = data["sect1"]["c1"][w2.StartDay].ToString();
+            Cell02 = data["sect1"]["c1"][w3.StartDay].ToString();
+            Cell10 = data["sect2"]["c2"][w1.StartDay].ToString();
+            Cell11 = data["sect2"]["c2"][w2.StartDay].ToString();
+            Cell12 = data["sect2"]["c2"][w3.StartDay].ToString();
+        }
 
         // Этот атрибут автоматически создаст публичное свойство ToggleGreetingCommand
         [RelayCommand]
@@ -48,6 +69,22 @@ namespace FinanceMobile.ViewModels
             WelcomeMessage = WelcomeMessage == OriginalText
                 ? AlternateText
                 : OriginalText;
+
+            Section s1 = new Section("sect1", 3);
+            Section s2 = new Section("sect2", 3);
+            Week w1 = new Week() { StartDay = DateTime.Today, EndDay = DateTime.Today.AddDays(6) };
+            Week w2 = new Week() { StartDay = DateTime.Today.AddDays(7), EndDay = DateTime.Today.AddDays(7+6) };
+            Week w3 = new Week() { StartDay = DateTime.Today.AddDays(14), EndDay = DateTime.Today.AddDays(14+6) };
+            s1.AddCategory("c1");
+            s2.AddCategory("c2");
+            s1["c1", w1] = new Cell() { Value = double.Parse(Cell00) };
+            s1["c1", w2] = new Cell() { Value = double.Parse(Cell01) };
+            s1["c1", w3] = new Cell() { Value = double.Parse(Cell02) };
+            s2["c2", w1] = new Cell() { Value = double.Parse(Cell10) };
+            s2["c2", w2] = new Cell() { Value = double.Parse(Cell11) };
+            s2["c2", w3] = new Cell() { Value = double.Parse(Cell12) };
+
+            dbs.SaveAllCells(new() { s1, s2 });
         }
 
         // Этот метод вызывается автоматически при изменении Cell00

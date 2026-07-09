@@ -12,7 +12,10 @@ namespace FinanceMobile.Databases
     {
         private readonly SQLiteConnection _db;
 
-        public DatabaseService()
+        //Singletone
+        public static DatabaseService DatabaseServiceInstance { get; private set; } = new();
+
+        private DatabaseService()
         {
             // Определяем путь к файлу БД. 
             // На Android это будет внутренняя папка приложения: /data/data/com.yourapp/files/
@@ -32,7 +35,7 @@ namespace FinanceMobile.Databases
         {
             _db.RunInTransaction(() =>
             {
-                _db.Table<CellRecord>().Delete(); // Очищаем таблицу
+                _db.DeleteAll<CellRecord>(); // Очищаем таблицу
 
                 foreach (var sect in sections)
                 {
@@ -51,17 +54,17 @@ namespace FinanceMobile.Databases
         }
 
         // Загрузить все ячейки
-        public Dictionary<string,Dictionary<string,(DateTime,double)>> LoadAllCells()
+        public Dictionary<string,Dictionary<string,Dictionary<DateTime,double>>> LoadAllCells()
         {
             var records = _db.Table<CellRecord>().ToList();
-            var sections = new Dictionary<string, Dictionary<string, (DateTime, double)>>();
+            var sections = new Dictionary<string, Dictionary<string, Dictionary<DateTime, double>>>();
             foreach (var record in records)
             {
                 if (!sections.ContainsKey(record.SectionName)) sections[record.SectionName] = new();
 
                 if (!sections[record.SectionName].ContainsKey(record.CategoryName)) sections[record.SectionName][record.CategoryName] = new();
 
-                sections[record.SectionName][record.CategoryName] = (record.WeekStart,record.Value);
+                sections[record.SectionName][record.CategoryName][record.WeekStart] = record.Value;
             }
             return sections;
         }

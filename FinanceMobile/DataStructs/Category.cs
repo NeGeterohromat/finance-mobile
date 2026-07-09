@@ -28,7 +28,8 @@ namespace FinanceMobile.DataStructs
             set { 
                 if (cells.ContainsKey(week)) 
                     cells[week] = value;
-                throw new InvalidOperationException($"Week does not exists in Category {Name}");
+                else
+                    throw new InvalidOperationException($"Week does not exists in Category {Name}");
             }
         }
 

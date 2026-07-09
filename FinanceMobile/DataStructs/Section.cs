@@ -17,7 +17,7 @@ namespace FinanceMobile.DataStructs
 
         private Category totals;
 
-        public Section(string name, int weeksCount, DateTime? weeksStart)
+        public Section(string name, int weeksCount, DateTime? weeksStart = null)
         {
             Name = name;
             categories = new();
