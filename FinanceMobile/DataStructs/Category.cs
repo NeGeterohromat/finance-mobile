@@ -31,5 +31,13 @@ namespace FinanceMobile.DataStructs
                 throw new InvalidOperationException($"Week does not exists in Category {Name}");
             }
         }
+
+        public IEnumerable<(Week,Cell)> GetCells()
+        {
+            foreach (var pair in cells)
+            {
+                yield return (pair.Key, pair.Value);
+            }
+        }
     }
 }

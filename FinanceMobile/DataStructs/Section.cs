@@ -55,6 +55,23 @@ namespace FinanceMobile.DataStructs
             }
         }
 
+        public IEnumerable<(string,Week,Cell)> GetCellsWithoutTotals()
+        {
+            foreach (var pair in categories) 
+            {
+                foreach (var cellPair in pair.Value.GetCells())
+                {
+                    yield return (pair.Key, cellPair.Item1, cellPair.Item2);
+                }
+            }
+            /*
+            foreach (var cellPair in totals.GetCells())
+            {
+                yield return (TotalsName,cellPair.Item1,cellPair.Item2);
+            }
+            */
+        } 
+
         private void RecalculateTotals(Week week, Cell newCell, Cell lastCell)
         {
             totals[week] = new Cell() { Value = totals[week].Value + newCell.Value - lastCell.Value };
