@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml.Linq;
 
 namespace FinanceMobile.DataStructs
 {
@@ -43,16 +44,15 @@ namespace FinanceMobile.DataStructs
                     return totals[week];
                 return categories[name][week];
             }
-            set
-            {
-                if (!categories.TryGetValue(name, out var category)) throw new InvalidOperationException($"Editable Category with name {name} does not exists");
-                
-                var lastCell = category[week];
-                // the category itself checks whether a week exists in the category
-                category[week] = value;
+        }
 
-                RecalculateTotals(week, value, lastCell);
-            }
+        public void AddOperation(string category, Operation op)
+        {
+            if (!categories.TryGetValue(category, out var cat)) throw new InvalidOperationException($"Editable Category with name {category} does not exists");
+
+            var week = cat.AddOperation(op);
+
+            totals.AddOperation(op,week);
         }
 
         public IEnumerable<(string,Week,Cell)> GetCellsWithoutTotals()
@@ -71,10 +71,5 @@ namespace FinanceMobile.DataStructs
             }
             */
         } 
-
-        private void RecalculateTotals(Week week, Cell newCell, Cell lastCell)
-        {
-            totals[week] = new Cell() { Value = totals[week].Value + newCell.Value - lastCell.Value };
-        }
     }
 }

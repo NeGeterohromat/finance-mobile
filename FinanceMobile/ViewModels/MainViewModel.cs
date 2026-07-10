@@ -47,6 +47,7 @@ namespace FinanceMobile.ViewModels
         [RelayCommand]
         private void GetFromDB()
         {
+            /*
             var data = dbs.LoadAllCells();
 
             Week w1 = new Week() { StartDay = DateTime.Today, EndDay = DateTime.Today.AddDays(6) };
@@ -59,6 +60,7 @@ namespace FinanceMobile.ViewModels
             Cell10 = data["sect2"]["c2"][w1.StartDay].ToString();
             Cell11 = data["sect2"]["c2"][w2.StartDay].ToString();
             Cell12 = data["sect2"]["c2"][w3.StartDay].ToString();
+            */
         }
 
         // Этот атрибут автоматически создаст публичное свойство ToggleGreetingCommand
@@ -69,7 +71,7 @@ namespace FinanceMobile.ViewModels
             WelcomeMessage = WelcomeMessage == OriginalText
                 ? AlternateText
                 : OriginalText;
-
+            /*
             Section s1 = new Section("sect1", 3);
             Section s2 = new Section("sect2", 3);
             Week w1 = new Week() { StartDay = DateTime.Today, EndDay = DateTime.Today.AddDays(6) };
@@ -85,6 +87,7 @@ namespace FinanceMobile.ViewModels
             s2["c2", w3] = new Cell() { Value = double.Parse(Cell12) };
 
             dbs.SaveAllCells(new() { s1, s2 });
+            */
         }
 
         // Этот метод вызывается автоматически при изменении Cell00

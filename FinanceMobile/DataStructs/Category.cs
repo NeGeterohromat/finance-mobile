@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FinanceMobile.Databases;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,10 +9,12 @@ namespace FinanceMobile.DataStructs
     {
         public string Name { get; private set; }
         private Dictionary<Week, Cell> cells;
+        private Dictionary<Week, List<Operation>> operations;
         public Category(int cellCount, string name, DateTime? weekStart = null)
         {
             Name = name;
             cells = new();
+            operations = new();
             // If default not set, default is today
             if (weekStart is null)
                 weekStart = DateTime.Today;
@@ -25,12 +28,32 @@ namespace FinanceMobile.DataStructs
         public Cell this[Week week]
         {
             get {  return cells[week]; }
-            set { 
-                if (cells.ContainsKey(week)) 
-                    cells[week] = value;
-                else
-                    throw new InvalidOperationException($"Week does not exists in Category {Name}");
+        }
+
+        public Week AddOperation(Operation op, Week? guessedWeek = null)
+        {
+            if (guessedWeek is null)
+            {
+                foreach (var week in cells.Keys)
+                    if (AddOperationAtWeekIfPossible(op, week))
+                        return week;
             }
+            else if (AddOperationAtWeekIfPossible(op, (Week)guessedWeek))
+                return (Week)guessedWeek;
+            
+            throw new InvalidOperationException($"Operation date {op.Date} is out of table");
+        }
+
+        private bool AddOperationAtWeekIfPossible(Operation op, Week week)
+        {
+            if (week.StartDay <= op.Date && op.Date < week.EndDay)
+            {
+                if (!operations.ContainsKey(week))
+                    operations[week] = new();
+                operations[week].Add(op);
+                return true;
+            }
+            return false;
         }
 
         public IEnumerable<(Week,Cell)> GetCells()

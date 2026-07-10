@@ -26,11 +26,57 @@ namespace FinanceMobile.Databases
             // Открываем (или создаем) соединение
             _db = new SQLiteConnection(dbPath);
 
-            // Создаем таблицу, если её еще нет
-            _db.CreateTable<CellRecord>();
+            // Создаем таблицы, если их еще нет
+            InitializeDatabase();
+        }
+
+        private void InitializeDatabase()
+        {
+            // Выполняем ваш точный SQL-скрипт
+            _db.Execute(@"CREATE TABLE IF NOT EXISTS accounts (
+                id      TEXT PRIMARY KEY,
+                name    TEXT NOT NULL,
+                type    TEXT NOT NULL,
+                balance REAL NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS categories (
+                id    TEXT PRIMARY KEY,
+                name  TEXT NOT NULL,
+                type  TEXT NOT NULL,
+                color TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS operations (
+                id          TEXT PRIMARY KEY,
+                date        TEXT NOT NULL,
+                type        TEXT NOT NULL,
+                status      TEXT NOT NULL,
+                category_id TEXT NOT NULL REFERENCES categories(id),
+                account_id  TEXT NOT NULL REFERENCES accounts(id),
+                amount      REAL NOT NULL,
+                description TEXT NOT NULL DEFAULT ''
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_operations_date ON operations(date);
+            CREATE INDEX IF NOT EXISTS idx_operations_status ON operations(status);
+
+            CREATE TABLE IF NOT EXISTS week_plans (
+                week_start     TEXT PRIMARY KEY,
+                income_plan    REAL NOT NULL DEFAULT 0,
+                expense_plan   REAL NOT NULL DEFAULT 0,
+                income_actual  REAL NOT NULL DEFAULT 0,
+                expense_actual REAL NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS settings (
+                key   TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );");
         }
 
         // Сохранить все ячейки (удаляет старые и записывает новые)
+        /*
         public void SaveAllCells(List<Section> sections)
         {
             _db.RunInTransaction(() =>
@@ -52,8 +98,11 @@ namespace FinanceMobile.Databases
                 }
             });
         }
+        */
+        
 
         // Загрузить все ячейки
+        /*
         public Dictionary<string,Dictionary<string,Dictionary<DateTime,double>>> LoadAllCells()
         {
             var records = _db.Table<CellRecord>().ToList();
@@ -68,5 +117,6 @@ namespace FinanceMobile.Databases
             }
             return sections;
         }
+        */
     }
 }
