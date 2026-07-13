@@ -75,48 +75,26 @@ namespace FinanceMobile.Databases
             );");
         }
 
-        // Сохранить все ячейки (удаляет старые и записывает новые)
-        /*
-        public void SaveAllCells(List<Section> sections)
+        public void SaveOperation(Operation op)
         {
-            _db.RunInTransaction(() =>
-            {
-                _db.DeleteAll<CellRecord>(); // Очищаем таблицу
-
-                foreach (var sect in sections)
-                {
-                    foreach (var cellData in sect.GetCellsWithoutTotals())
-                    {
-                        _db.Insert(new CellRecord
-                        {
-                            SectionName = sect.Name,
-                            CategoryName = cellData.Item1,
-                            WeekStart = cellData.Item2.StartDay,
-                            Value = cellData.Item3.Value
-                        });
-                    }
-                }
-            });
+            _db.InsertOrReplace(op);
         }
-        */
-        
 
-        // Загрузить все ячейки
-        /*
-        public Dictionary<string,Dictionary<string,Dictionary<DateTime,double>>> LoadAllCells()
+        public void SaveCategory(Category cat)
         {
-            var records = _db.Table<CellRecord>().ToList();
-            var sections = new Dictionary<string, Dictionary<string, Dictionary<DateTime, double>>>();
-            foreach (var record in records)
-            {
-                if (!sections.ContainsKey(record.SectionName)) sections[record.SectionName] = new();
-
-                if (!sections[record.SectionName].ContainsKey(record.CategoryName)) sections[record.SectionName][record.CategoryName] = new();
-
-                sections[record.SectionName][record.CategoryName][record.WeekStart] = record.Value;
-            }
-            return sections;
+            _db.InsertOrReplace(cat);
         }
-        */
+
+        public string GetCategoryID(string name, string type)
+        {
+            return _db.Table<Category>()
+              .Where(c => c.Name == name && c.Type == type)
+              .FirstOrDefault()
+              .Id;
+        }
+
+        public List<Operation> GetOperationList() => _db.Table<Operation>().ToList();
+
+        public List<Category> GetCategoryList() => _db.Table<Category>().ToList();
     }
 }

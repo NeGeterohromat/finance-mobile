@@ -8,6 +8,7 @@ namespace FinanceMobile.Databases
     [Table("categories")]
     public class Category
     {
+        [PrimaryKey, AutoIncrement]
         [Column("id")]
         public string Id { get; set; }
 
