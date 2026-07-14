@@ -78,7 +78,8 @@ namespace FinanceMobile.DataStructs
         public IEnumerable<Operation> GetOperations(string sectionName, string categoryName,
             DateTime? dateStart = null, DateTime? dateEnd = null, bool isPlanned = false)
         {
-            return sections[sectionName].GetOperations(categoryName,dateStart, dateEnd, isPlanned);
+            foreach (var op in sections[sectionName].GetOperations(categoryName, dateStart, dateEnd, isPlanned))
+                yield return op;
         }
 
         public double GetCategorySum(string sectionName, string categoryName, DateTime? dateStart = null, DateTime? dateEnd = null, bool isPlanned = false)

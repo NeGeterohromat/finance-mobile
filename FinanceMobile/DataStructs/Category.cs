@@ -23,7 +23,8 @@ namespace FinanceMobile.DataStructs
 
         public IEnumerable<Operation> GetOperations(DateTime? dateStart = null, DateTime? dateEnd = null)
         { 
-            return operations.Get(dateStart, dateEnd);
+            foreach (var op in operations.Get(dateStart, dateEnd))
+                yield return op;
         }
     }
 }
