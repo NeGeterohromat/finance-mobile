@@ -16,9 +16,9 @@ namespace FinanceMobile.DataStructs
             operations = new();
         }
 
-        public void AddOperation(Operation op)
+        public void AddOperation(Operation op, int periodInDays = -1, DateTime? endDate = null)
         {
-            operations.Add(op);
+            operations.Add(op, periodInDays, endDate);
         }
 
         public IEnumerable<Operation> GetOperations(DateTime? dateStart = null, DateTime? dateEnd = null)

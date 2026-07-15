@@ -7,6 +7,7 @@ namespace FinanceMobile.DataStructs
 {
     public class SortedOperationList
     {
+        public const int DefaultMaxDays = 365 * 5;
         private class ListNode
         {
             public Operation Operation;
@@ -17,8 +18,11 @@ namespace FinanceMobile.DataStructs
         private struct PeriodicOperation
         {
             public Operation Operation;
+            public DateTime? EndDate;
             public int PeriodInDays;
         }
+
+        private DateTime? currentPeriodicEnd = null;
 
         private ListNode First;
 
@@ -41,7 +45,7 @@ namespace FinanceMobile.DataStructs
             }
         }
 
-        public void Delete(Operation op, int periodInDays = -1)
+        public void Delete(Operation op, int periodInDays = -1, DateTime? endDate = null)
         {
             var current = First;
             while (current != null)
@@ -57,7 +61,12 @@ namespace FinanceMobile.DataStructs
 
                     if (periodInDays != -1)
                     {
-                        if (!periodicOperations.Remove(new PeriodicOperation() { Operation = op, PeriodInDays = periodInDays }))
+                        var periodEnd = (DateTime)currentPeriodicEnd;
+                        if (!(endDate is null))
+                            periodEnd = (DateTime)endDate;
+                        for (DateTime i = op.Date.AddDays(periodInDays); i < periodEnd; i = i.AddDays(periodInDays))
+                            Delete(new Operation() { Value = op.Value, Date = i });
+                        if (!periodicOperations.Remove(new PeriodicOperation() { Operation = op, PeriodInDays = periodInDays, EndDate = endDate }))
                             throw new InvalidOperationException($"Periodic Operation with date {op.Date}, value {op.Value} and period {periodInDays} not found");
                     }
 
@@ -72,8 +81,9 @@ namespace FinanceMobile.DataStructs
             throw new InvalidOperationException($"Operation with date {op.Date} and value {op.Value} not found");
         }
 
-        public void Add(Operation op, int periodInDays = -1)
+        public void Add(Operation op, int periodInDays = -1, DateTime? endDate = null)
         {
+            DateTime? repeatOpeartionUntil = null;
             // Если указан период, то добавляем периодическую операцию в список.
             if (periodInDays != -1)
             {
@@ -81,8 +91,14 @@ namespace FinanceMobile.DataStructs
                 periodicOperations.Add(new PeriodicOperation()
                 {
                     Operation = op,
-                    PeriodInDays = periodInDays
+                    PeriodInDays = periodInDays,
+                    EndDate = endDate
                 });
+
+                if (!(endDate is null))
+                {
+                    repeatOpeartionUntil = endDate;
+                }                
             }
 
             var current = First;
@@ -121,13 +137,46 @@ namespace FinanceMobile.DataStructs
             lastNode.Last.Next = lastNode;
 
             //Count++;
+
+            // Обновляю переменную для цикла добавления периодических операций
+            if (periodInDays != -1 && endDate is null)
+            {
+                if (currentPeriodicEnd is null)
+                    currentPeriodicEnd = First.Operation.Date.AddDays(DefaultMaxDays);
+                repeatOpeartionUntil = currentPeriodicEnd;
+            }
+
+            // Добавляем бесконечные операции до текущего предела (предел, если нужно, обновим в Get)
+            if (!(repeatOpeartionUntil is null))
+            {
+                for (DateTime i = op.Date.AddDays(periodInDays); i < repeatOpeartionUntil; i = i.AddDays(periodInDays))
+                {
+                    Add(new Operation() { Value = op.Value, Date = i });
+                }
+            }
         }
 
         public IEnumerable<Operation> Get(DateTime? dateStart = null, DateTime? dateEnd = null)
         {
             var current = First;
             DateTime start = (dateStart ?? DateTime.MinValue);
-            DateTime end = dateEnd ?? (First is null ? DateTime.MinValue : First.Operation.Date.AddDays(365*5));
+            DateTime end = dateEnd ?? (First is null ? DateTime.MinValue : First.Operation.Date.AddDays(DefaultMaxDays));
+            if (!(currentPeriodicEnd is null) && currentPeriodicEnd < end)
+            {
+                DateTime lastEnd = (DateTime)currentPeriodicEnd;
+                currentPeriodicEnd = end;
+                foreach (var op in periodicOperations)
+                {
+                    if (!(op.EndDate is null)) continue;
+
+                    int daysSpan = (lastEnd - op.Operation.Date).Days;
+                    DateTime firstDayAfterPreviousEnd = op.Operation.Date.AddDays(daysSpan + (op.PeriodInDays - daysSpan % op.PeriodInDays));
+                    for (DateTime i = firstDayAfterPreviousEnd; i < currentPeriodicEnd; i = i.AddDays(op.PeriodInDays))
+                    {
+                        Add(new Operation() { Value = op.Operation.Value, Date = i });
+                    }
+                }
+            }
             while (!(current is null))
             {
                 if (current.Operation.Date >= start)
@@ -135,16 +184,12 @@ namespace FinanceMobile.DataStructs
                     if (current.Operation.Date > end) break;
 
                     yield return current.Operation;
-
-                    foreach (var op in GetPeriodicList(current, end))
-                    {
-                        yield return op;
-                    }
                 }
                 current = current.Next;
             }
         }
 
+        /*
         private List<Operation> GetPeriodicList(ListNode current, DateTime end)
         {
             var currentDate = current.Operation.Date;
@@ -169,5 +214,6 @@ namespace FinanceMobile.DataStructs
             list.Sort((op1, op2) => op1.Date.CompareTo(op2.Date));
             return list;
         }
+        */
     }
 }
