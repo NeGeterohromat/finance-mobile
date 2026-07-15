@@ -32,7 +32,7 @@ namespace FinanceMobile.DataStructs
             categoriesPlanned[name] = new Category(name);
         }
 
-        public void AddOperation(string categoryName, Operation op, bool isPlanned = false)
+        public void AddOperation(string categoryName, Operation op, bool isPlanned = false, int PeriodInDays = -1)
         {
             var categories = isPlanned ? categoriesPlanned : categoriesActual;
             if (!categories.TryGetValue(categoryName, out var cat)) throw new InvalidOperationException($"Editable Category with name {categoryName} does not exists");

@@ -72,10 +72,28 @@ namespace FinanceMobile.Databases
             CREATE TABLE IF NOT EXISTS settings (
                 key   TEXT PRIMARY KEY,
                 value TEXT NOT NULL
-            );");
+            );
+
+            CREATE TABLE IF NOT EXISTS recurring_rules (
+                id            TEXT PRIMARY KEY,
+                type          TEXT NOT NULL,
+                category_id   TEXT NOT NULL REFERENCES categories(id),
+                account_id    TEXT NOT NULL REFERENCES accounts(id),
+                amount        REAL NOT NULL,
+                interval_days INTEGER NOT NULL,
+                start_date    TEXT NOT NULL,
+                end_date      TEXT,
+                description   TEXT NOT NULL DEFAULT ''
+            );
+            ALTER TABLE operations ADD COLUMN recurring_id TEXT;");
         }
 
         public void SaveOperation(Operation op)
+        {
+            _db.InsertOrReplace(op);
+        }
+
+        public void SavePeriodicOperation(PeriodicOperation op)
         {
             _db.InsertOrReplace(op);
         }

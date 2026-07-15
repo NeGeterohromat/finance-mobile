@@ -58,21 +58,39 @@ namespace FinanceMobile.DataStructs
             });
         }
 
-        public void AddOperation(string sectionName, string categoryName, DateTime date, double value, bool isPlanned = false)
+        public void AddOperation(string sectionName, string categoryName, DateTime date, double value, bool isPlanned = false,
+            int periodInDays = -1, DateTime? endDate = null)
         {
             var section = sections[sectionName];
-            section.AddOperation(categoryName, new Operation() { Date = date, Value = value });
+            section.AddOperation(categoryName, new Operation() { Date = date, Value = value }, isPlanned, periodInDays);
 
-            databaseService.SaveOperation(new Databases.Operation()
+            if (periodInDays == -1)
             {
-                Date = date,
-                Type = databaseOperationTypeNames[sectionName],
-                Status = isPlanned ? "planned" : "actual",
-                CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
-                AccountId = "", // Пока хз, как работать с аккаунтами.
-                Amount = value,
-                Description = ""
-            });
+                databaseService.SaveOperation(new Databases.Operation()
+                {
+                    Date = date,
+                    Type = databaseOperationTypeNames[sectionName],
+                    Status = isPlanned ? "planned" : "actual",
+                    CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
+                    AccountId = "", // Пока хз, как работать с аккаунтами.
+                    Amount = value,
+                    Description = ""
+                });
+            } else if (periodInDays > 1)
+            {
+                databaseService.SavePeriodicOperation(new Databases.PeriodicOperation()
+                {
+                    StartDate = date,
+                    EndDate = endDate,
+                    Type = databaseOperationTypeNames[sectionName],
+                    //Status = isPlanned ? "planned" : "actual",
+                    CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
+                    AccountId = "", // Пока хз, как работать с аккаунтами.
+                    Amount = value,
+                    Description = "",
+                    IntervalDays = periodInDays
+                });
+            } else throw new InvalidOperationException($"Period must be positive number, not {periodInDays}");
         }
 
         public IEnumerable<Operation> GetOperations(string sectionName, string categoryName,
