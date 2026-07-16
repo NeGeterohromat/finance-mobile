@@ -1,0 +1,104 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:FinanceMobile.ViewModels"
+        xmlns:conv="using:FinanceMobile.Converters"
+        x:Class="FinanceMobile.Views.AddEntryWindow"
+        x:DataType="vm:AddEntryViewModel"
+        Title="Добавить запись"
+        Width="400" Height="700"
+        Background="#FFFFFF"
+        WindowStartupLocation="CenterOwner">
+
+    <Window.Resources>
+        <conv:TabSelectionBrushConverter x:Key="TabBrush"/>
+    </Window.Resources>
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="16">
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0" Content="←" Command="{Binding CloseCommand}" Background="Transparent" Foreground="#111111" FontWeight="Bold"/>
+                <TextBlock Grid.Column="1" Text="Добавить запись" FontSize="18" FontWeight="Bold" Foreground="#111111" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <PathIcon Grid.Column="2" Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" Width="18" Height="18" Foreground="#111111"/>
+            </Grid>
+
+            <Border Background="#F1F1F1" CornerRadius="12" Padding="4">
+                <UniformGrid Columns="3">
+                    <Button Content="Расход" Command="{Binding SelectTypeCommand}" CommandParameter="Расход"
+                            Background="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Расход|#FFFFFF|Transparent'}"
+                            Foreground="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Расход|#111111|#666666'}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                    <Button Content="Доход" Command="{Binding SelectTypeCommand}" CommandParameter="Доход"
+                            Background="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Доход|#FFFFFF|Transparent'}"
+                            Foreground="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Доход|#111111|#666666'}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                    <Button Content="Перевод" Command="{Binding SelectTypeCommand}" CommandParameter="Перевод"
+                            Background="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Перевод|#FFFFFF|Transparent'}"
+                            Foreground="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Перевод|#111111|#666666'}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                </UniformGrid>
+            </Border>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Сумма" FontSize="13" Foreground="#666666"/>
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBox Grid.Column="0" Text="{Binding Amount}" Watermark="Введите сумму"/>
+                    <ComboBox Grid.Column="1" SelectedIndex="0" Margin="8,0,0,0">
+                        <ComboBoxItem>RUB</ComboBoxItem>
+                        <ComboBoxItem>USD</ComboBoxItem>
+                        <ComboBoxItem>EUR</ComboBoxItem>
+                    </ComboBox>
+                    <Button Grid.Column="2" Command="{Binding ToggleRecurringCommand}" Background="Transparent" Margin="8,0,0,0">
+                        <PathIcon Data="M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13.57 17.37,14.99 16.33,16L17.75,17.42C19.15,16 20,14.1 20,12A8,8 0 0,0 12,4M6,12C6,10.43 6.63,9.01 7.67,8L6.25,6.58C4.85,8 4,9.9 4,12A8,8 0 0,0 12,20V23L16,19L12,15V18A6,6 0 0,1 6,12Z"
+                                  Width="18" Height="18"
+                                  Foreground="{Binding IsRecurring, Converter={StaticResource TabBrush}, ConverterParameter='True|#111111|#999999'}"/>
+                    </Button>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Spacing="6" IsVisible="{Binding IsNotTransfer}">
+                <TextBlock Text="Счет" FontSize="13" Foreground="#666666"/>
+                <ComboBox ItemsSource="{Binding AccountOptions}" SelectedItem="{Binding SelectedAccount}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6" IsVisible="{Binding IsTransfer}">
+                <TextBlock Text="Счет списания" FontSize="13" Foreground="#666666"/>
+                <ComboBox ItemsSource="{Binding AccountOptions}" SelectedItem="{Binding SelectedFromAccount}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            <StackPanel Spacing="6" IsVisible="{Binding IsTransfer}">
+                <TextBlock Text="Счет пополнения" FontSize="13" Foreground="#666666"/>
+                <ComboBox ItemsSource="{Binding AccountOptions}" SelectedItem="{Binding SelectedToAccount}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6" IsVisible="{Binding IsNotTransfer}">
+                <TextBlock Text="Категория" FontSize="13" Foreground="#666666"/>
+                <ComboBox ItemsSource="{Binding CategoryOptions}" SelectedItem="{Binding SelectedCategory}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Дата операции" FontSize="13" Foreground="#666666"/>
+                <Grid ColumnDefinitions="*,Auto">
+                    <Button Grid.Column="0" Content="Выберите дату" HorizontalContentAlignment="Left" Background="#F5F5F5" Foreground="#111111"/>
+                    <ComboBox Grid.Column="1" SelectedIndex="0" Margin="8,0,0,0" IsVisible="{Binding IsRecurring}">
+                        <ComboBoxItem>Не повторять</ComboBoxItem>
+                        <ComboBoxItem>Ежедневно</ComboBoxItem>
+                        <ComboBoxItem>Еженедельно</ComboBoxItem>
+                        <ComboBoxItem>Ежемесячно</ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+
+            <Border IsVisible="{Binding IsRecurring}" Background="#F1F1F1" CornerRadius="8" Padding="10">
+                <TextBlock Text="ⓘ Регулярные операции помечаются иконкой" FontSize="12" Foreground="#666666" TextWrapping="Wrap"/>
+            </Border>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Комментарий" FontSize="13" Foreground="#666666"/>
+                <TextBox Text="{Binding Comment}" Watermark="Опишите вашу запись" AcceptsReturn="True" Height="70" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <Button Content="Добавить" Command="{Binding AddCommand}" Background="#1A1A1A" Foreground="White" CornerRadius="12" Padding="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
