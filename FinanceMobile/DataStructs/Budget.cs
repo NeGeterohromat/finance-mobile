@@ -17,6 +17,7 @@ namespace FinanceMobile.DataStructs
 
         private Section incomes;
         private Section expenses;
+        private Dictionary<string, Deposite> deposites;
         private DatabaseService databaseService;
 
         private Dictionary<string, string> databaseOperationTypeNames = new()
@@ -32,6 +33,7 @@ namespace FinanceMobile.DataStructs
         {
             incomes = new(IncomesName);
             expenses = new(ExpensesName);
+            deposites = new();
             sections = new()
             {
                 {IncomesName, incomes },
@@ -43,6 +45,33 @@ namespace FinanceMobile.DataStructs
             databaseService = DatabaseService.DatabaseServiceInstance;
 
             LoadDataFromDB();
+        }
+
+        public void AddDeposite(string name)
+        {
+            if (deposites.ContainsKey(name)) throw new InvalidOperationException($"Deposite with name {name} already exists");
+            deposites[name] = new(name);
+        }
+
+        public void AddRefillToDeposite(string name, Operation refill, bool isPlanned = false)
+        {
+            deposites[name].AddOperation(Deposite.Refill, refill, isPlanned);
+        }
+
+        public void AddPercentsToDeposite(string name, Operation percents, bool isPlanned = false)
+        {
+            deposites[name].AddOperation(Deposite.Percents, percents, isPlanned);
+        }
+
+        public void AddWriteDownsToDeposite(string name, Operation writeDowns, bool isPlanned = false)
+        {
+            deposites[name].AddOperation(Deposite.WriteDowns, writeDowns, isPlanned);
+        }
+
+        // Счёт на депозите всегда считается с самого начала этого депозита.
+        public double GetDepositeResult(string name, DateTime? dateEnd = null, bool isPlanned = false)
+        {
+            return deposites[name].GetDepositeResult(dateEnd, isPlanned);
         }
 
         public void AddCategory(string sectionName, string categoryName)

@@ -10,7 +10,6 @@ namespace FinanceMobile.DataStructs
 {
     public class Section
     {
-        public const string TotalsName = "totals";
         public string Name { get; private set; }
 
         public int CategoriesCount { get { return categoriesActual.Count; } }
