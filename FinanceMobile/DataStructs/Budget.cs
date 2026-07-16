@@ -17,6 +17,7 @@ namespace FinanceMobile.DataStructs
 
         private Section incomes;
         private Section expenses;
+        private Dictionary<string,double> accounts;
         private Dictionary<string, Deposite> deposites;
         private DatabaseService databaseService;
 
@@ -31,6 +32,7 @@ namespace FinanceMobile.DataStructs
 
         public Budget() 
         {
+            accounts = new();
             incomes = new(IncomesName);
             expenses = new(ExpensesName);
             deposites = new();
@@ -46,6 +48,29 @@ namespace FinanceMobile.DataStructs
 
             LoadDataFromDB();
         }
+
+        public void AddAccount(string name, double initialBalance = 0)
+        {
+            if (accounts.ContainsKey(name)) throw new InvalidOperationException($"Account with name {name} already exists");
+            accounts[name] = initialBalance;
+
+            // TODO сохранение в бд
+        }
+
+        public void RewriteAccountBalance(string name, double balance)
+        {
+            if (accounts.ContainsKey(name))
+            {
+                // TODO сохранение в бд
+                accounts[name] = balance;
+            }
+            else throw new InvalidOperationException($"Account with name {name} does not exists");
+        }
+
+        public double GetAccountsSum() => accounts.Values.Sum();
+
+        // Учитываем только actual, за всё время ввода данных.
+        public double GetAccountsAndBudgetDifference() => GetAccountsSum() - GetIncomeExpenseDifference();
 
         public void AddDeposite(string name)
         {
