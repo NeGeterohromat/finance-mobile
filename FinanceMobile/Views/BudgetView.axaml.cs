@@ -12,11 +12,14 @@ namespace FinanceMobile.Views
 
             AddEntryButton.Click += (_, _) =>
             {
+                App.NavigateTo(new AddEntryViewModel());
+                /*
                 var window = new AddEntryWindow();
                 if (TopLevel.GetTopLevel(this) is Window owner)
                     window.ShowDialog(owner);
                 else
                     window.Show();
+                */
             };
         }
     }

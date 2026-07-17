@@ -1,17 +1,19 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:FinanceMobile.ViewModels"
-        xmlns:conv="using:FinanceMobile.Converters"
-        x:Class="FinanceMobile.Views.AddEntryWindow"
-        x:DataType="vm:AddEntryViewModel"
-        Title="Добавить запись"
-        Width="400" Height="700"
-        Background="#FFFFFF"
-        WindowStartupLocation="CenterOwner">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:FinanceMobile.ViewModels"
+             xmlns:ds="using:FinanceMobile.DataStructs"
+             xmlns:conv="using:FinanceMobile.Converters"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+             x:Class="FinanceMobile.Views.AddEntryWindow"
+             x:DataType="vm:AddEntryViewModel"
+             Background="#FAFAFA">
 
-    <Window.Resources>
+	<UserControl.Resources>
         <conv:TabSelectionBrushConverter x:Key="TabBrush"/>
-    </Window.Resources>
+    </UserControl.Resources>
+	
 
     <ScrollViewer>
         <StackPanel Margin="20" Spacing="16">
@@ -78,7 +80,9 @@
             <StackPanel Spacing="6">
                 <TextBlock Text="Дата операции" FontSize="13" Foreground="#666666"/>
                 <Grid ColumnDefinitions="*,Auto">
-                    <Button Grid.Column="0" Content="Выберите дату" HorizontalContentAlignment="Left" Background="#F5F5F5" Foreground="#111111"/>
+                    <!-- <Button Grid.Column="0" Content="Выберите дату" HorizontalContentAlignment="Left" Background="#F5F5F5" Foreground="#111111"/> -->
+					<!-- Пока текст для тестов -->
+					<TextBox Grid.Column="0" Text="{Binding DateInISOFormat}" Watermark="Выберите дату" HorizontalContentAlignment="Left" Background="#F5F5F5" Foreground="#111111"/>
                     <ComboBox Grid.Column="1" SelectedIndex="0" Margin="8,0,0,0" IsVisible="{Binding IsRecurring}">
                         <ComboBoxItem>Не повторять</ComboBoxItem>
                         <ComboBoxItem>Ежедневно</ComboBoxItem>
@@ -101,4 +105,4 @@
 
         </StackPanel>
     </ScrollViewer>
-</Window>
+</UserControl>

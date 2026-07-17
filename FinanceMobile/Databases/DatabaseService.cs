@@ -86,6 +86,12 @@ namespace FinanceMobile.Databases
                 description   TEXT NOT NULL DEFAULT ''
             );
             ALTER TABLE operations ADD COLUMN recurring_id TEXT;");
+
+            //_db.CreateTable<Category>();
+
+            var count = _db.ExecuteScalar<int>("SELECT COUNT(*) FROM categories;");
+            var count2 = _db.Table<Category>().Count();
+            var c = 454;
         }
 
         public void SaveOperation(Operation op)

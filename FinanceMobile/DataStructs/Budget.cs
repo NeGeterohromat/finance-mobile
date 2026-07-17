@@ -169,6 +169,14 @@ namespace FinanceMobile.DataStructs
             return incomes.GetSum(dateStart, dateEnd, isPlanned) - expenses.GetSum(dateStart, dateEnd, isPlanned);
         }
 
+        public IEnumerable<string> GetCategoryNames(string sectionName)
+        {
+            foreach (var cat in sections[sectionName].GetCategoryNames())
+            {
+                yield return cat;
+            }
+        }
+
         private void LoadDataFromDB()
         {
             var categories = databaseService.GetCategoryList().ToDictionary(c => c.Id, c => c);

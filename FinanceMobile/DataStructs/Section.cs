@@ -54,5 +54,13 @@ namespace FinanceMobile.DataStructs
             .SelectMany(c => c.GetOperations(dateStart, dateEnd))
             .Select(op => op.Value)
             .Sum();
+
+        public IEnumerable<string> GetCategoryNames()
+        {
+            foreach (var cat in categoriesActual.Keys)
+            {
+                yield return cat;
+            }
+        }
     }
 }

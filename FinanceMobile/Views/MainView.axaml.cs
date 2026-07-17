@@ -12,6 +12,12 @@ namespace FinanceMobile.Views
         {
             InitializeComponent();
 
+            // Подписываемся на изменения и передаем новый ViewModel в ContentControl
+            App.PageChanged += () =>
+            {
+                PageHost.Content = App.CurrentPage;
+            };
+
             // Устанавливаем ViewModel как источник данных для этого экрана
             DataContext = new MainViewModel();
         }

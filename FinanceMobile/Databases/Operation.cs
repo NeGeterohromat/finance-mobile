@@ -8,7 +8,7 @@ namespace FinanceMobile.Databases
     [Table("operations")]
     public class Operation
     {
-        [PrimaryKey, AutoIncrement]
+        [PrimaryKey]
         [Column("id")]
         public string Id { get; set; }
 

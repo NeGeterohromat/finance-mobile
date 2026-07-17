@@ -1,12 +1,20 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FinanceMobile.DataStructs;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace FinanceMobile.ViewModels
 {
     public partial class AddEntryViewModel : ViewModelBase
     {
+        private Dictionary<string, string> selectedTypeToSectionName = new()
+        {
+            {"Расход",Budget.ExpensesName },
+            {"Доход",Budget.IncomesName }
+        };
+
         [ObservableProperty]
         private string _selectedType = "Расход";
 
@@ -30,6 +38,9 @@ namespace FinanceMobile.ViewModels
 
         [ObservableProperty]
         private bool _isRecurring;
+
+        [ObservableProperty]
+        private string _dateInISOFormat = "";
 
         // TODO: заменить на реальные счета/категории из FinanceMobile.Databases
         public ObservableCollection<string> AccountOptions { get; } = new()
@@ -63,10 +74,24 @@ namespace FinanceMobile.ViewModels
         private void Add()
         {
             // TODO: сохранить операцию в БД через FinanceMobile.Databases.Operation
-            RequestClose?.Invoke();
-        }
+            //RequestClose?.Invoke();
 
+            var sectionName = selectedTypeToSectionName[SelectedType];
+            var categoryName = SelectedCategory;
+            var value = double.Parse(Amount);
+            var date = DateTime.Parse(DateInISOFormat);
+            App.AppBudget.AddOperation(sectionName, categoryName, date, value);
+            App.NavigateTo(new BudgetViewModel());
+        }
+        /*
         [RelayCommand]
         private void Close() => RequestClose?.Invoke();
+        */
+
+        [RelayCommand]
+        private void Close()
+        {
+            App.NavigateTo(new BudgetViewModel());
+        }
     }
 }
