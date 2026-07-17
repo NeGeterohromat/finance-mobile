@@ -1,0 +1,178 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:FinanceMobile.ViewModels"
+             xmlns:ds="using:FinanceMobile.DataStructs"
+             xmlns:conv="using:FinanceMobile.Converters"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+             x:Class="FinanceMobile.Views.BudgetView"
+             x:DataType="vm:BudgetViewModel"
+             Background="#FAFAFA">
+
+    <UserControl.Resources>
+        <conv:TabSelectionBrushConverter x:Key="TabBrush"/>
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="*, Auto">
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16" Spacing="20">
+
+                <Grid ColumnDefinitions="*, Auto, Auto">
+                    <TextBlock Grid.Column="0" Text="Бюджет" FontSize="24" FontWeight="Bold" Foreground="#111111" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" x:Name="AddEntryButton" Background="Transparent" Padding="4" Margin="0,0,8,0">
+                        <PathIcon Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" Width="20" Height="20" Foreground="#111111"/>
+                    </Button>
+                    <Button Grid.Column="2" Background="Transparent" Padding="4">
+                        <PathIcon Data="M12,15A3,3 0 0,1 9,12A3,3 0 0,1 15,12A3,3 0 0,1 12,15M19.14,12.94C19.16,12.63 19.16,12.31 19.11,12L21.1,10.44C21.28,10.3 21.33,10.05 21.21,9.84L19.32,6.56C19.2,6.35 18.95,6.27 18.73,6.35L16.39,7.3C15.9,6.92 15.37,6.6 14.8,6.36L14.44,3.87C14.4,3.65 14.21,3.47 13.98,3.47H10.02C9.79,3.47 9.6,3.65 9.56,3.87L9.2,6.36C8.63,6.6 8.1,6.92 7.61,7.3L5.27,6.35C5.05,6.27 4.8,6.35 4.68,6.56L2.79,9.84C2.67,10.05 2.72,10.3 2.9,10.44L4.89,12C4.84,12.31 4.84,12.63 4.86,12.94L2.87,14.5C2.69,14.64 2.64,14.89 2.76,15.1L4.65,18.38C4.77,18.59 5.02,18.67 5.24,18.59L7.58,17.64C8.07,18.02 8.6,18.34 9.17,18.58L9.53,21.07C9.57,21.29 9.76,21.47 9.99,21.47H13.95C14.18,21.47 14.37,21.29 14.41,21.07L14.77,18.58C15.34,18.34 15.87,18.02 16.36,17.64L18.7,18.59C18.92,18.67 19.17,18.59 19.29,18.38L21.18,15.1C21.3,14.89 21.25,14.64 21.07,14.5L19.14,12.94Z" Width="20" Height="20" Foreground="#111111"/>
+                    </Button>
+                </Grid>
+
+                <Border Background="#F1F1F1" CornerRadius="12" Padding="4">
+                    <UniformGrid Columns="4">
+                        <Button Content="Неделя" Command="{Binding SelectPeriodCommand}" CommandParameter="Неделя"
+                                Background="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Неделя|#FFFFFF|Transparent'}"
+                                Foreground="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Неделя|#111111|#666666'}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                        <Button Content="Месяц" Command="{Binding SelectPeriodCommand}" CommandParameter="Месяц"
+                                Background="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Месяц|#FFFFFF|Transparent'}"
+                                Foreground="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Месяц|#111111|#666666'}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                        <Button Content="Квартал" Command="{Binding SelectPeriodCommand}" CommandParameter="Квартал"
+                                Background="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Квартал|#FFFFFF|Transparent'}"
+                                Foreground="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Квартал|#111111|#666666'}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                        <Button Content="Год" Command="{Binding SelectPeriodCommand}" CommandParameter="Год"
+                                Background="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Год|#FFFFFF|Transparent'}"
+                                Foreground="{Binding SelectedPeriod, Converter={StaticResource TabBrush}, ConverterParameter='Год|#111111|#666666'}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                    </UniformGrid>
+                </Border>
+
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <Button Grid.Column="0" Content="←" Command="{Binding PreviousPeriodCommand}" Background="Transparent" Foreground="#111111" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="1" Text="{Binding DateRangeText}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Medium" FontSize="16" Foreground="#111111"/>
+                    <Button Grid.Column="2" Content="→" Command="{Binding NextPeriodCommand}" Background="Transparent" Foreground="#111111" FontWeight="Bold"/>
+                </Grid>
+
+                <Border Background="#F1F1F1" CornerRadius="12" Padding="4">
+                    <UniformGrid Columns="3">
+                        <Button Content="План" Command="{Binding SelectModeCommand}" CommandParameter="План"
+                                Background="{Binding SelectedMode, Converter={StaticResource TabBrush}, ConverterParameter='План|#FFFFFF|Transparent'}"
+                                Foreground="{Binding SelectedMode, Converter={StaticResource TabBrush}, ConverterParameter='План|#111111|#666666'}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                        <Button Content="Факт" Command="{Binding SelectModeCommand}" CommandParameter="Факт"
+                                Background="{Binding SelectedMode, Converter={StaticResource TabBrush}, ConverterParameter='Факт|#FFFFFF|Transparent'}"
+                                Foreground="{Binding SelectedMode, Converter={StaticResource TabBrush}, ConverterParameter='Факт|#111111|#666666'}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                        <Button Content="Сравнение" Command="{Binding SelectModeCommand}" CommandParameter="Сравнение"
+                                Background="{Binding SelectedMode, Converter={StaticResource TabBrush}, ConverterParameter='Сравнение|#FFFFFF|Transparent'}"
+                                Foreground="{Binding SelectedMode, Converter={StaticResource TabBrush}, ConverterParameter='Сравнение|#111111|#666666'}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                    </UniformGrid>
+                </Border>
+
+                <Border BorderBrush="#EAEAEA" BorderThickness="1" CornerRadius="12" Background="White" Padding="12">
+                    <UniformGrid Columns="3">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <Grid Width="32" Height="32">
+                                <Ellipse Width="32" Height="32" Fill="#E6F7F0"/>
+                                <Path Data="M6,0 L12,10 L0,10 Z" Fill="#2FAE60" Width="10" Height="8" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Text="Доходы" FontSize="11" Foreground="#999999" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding IncomeTotal}" FontSize="14" FontWeight="Bold" Foreground="#111111" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <Grid Width="32" Height="32">
+                                <Ellipse Width="32" Height="32" Fill="#FCEBEB"/>
+                                <Path Data="M0,0 L12,0 L6,10 Z" Fill="#E5484D" Width="10" Height="8" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Text="Расходы" FontSize="11" Foreground="#999999" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding ExpenseTotal}" FontSize="14" FontWeight="Bold" Foreground="#111111" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <Ellipse Width="32" Height="32" Fill="#F5F5F5"/>
+                            <TextBlock Text="Итого" FontSize="11" Foreground="#999999" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding BalanceTotal}" FontSize="14" FontWeight="Bold" Foreground="#111111" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </UniformGrid>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Categories}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="4"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="ds:CategoryGroupItem">
+                            <StackPanel Spacing="4" Margin="0,0,0,10">
+                                <Button Command="{Binding ToggleCommand}"
+                                        Background="#F5F5F5"
+                                        CornerRadius="12"
+                                        Padding="14,12"
+                                        HorizontalAlignment="Stretch">
+                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto">
+                                        <PathIcon Grid.Column="0" Data="{Binding IconData}" Width="16" Height="16" Margin="0,0,8,0" Foreground="#111111"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="Medium" VerticalAlignment="Center" Foreground="#111111"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding TotalAmount}" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#111111"/>
+                                        <TextBlock Grid.Column="3" Text="∧" IsVisible="{Binding IsExpanded}" VerticalAlignment="Center" Foreground="#999999"/>
+                                        <TextBlock Grid.Column="3" Text="∨" IsVisible="{Binding !IsExpanded}" VerticalAlignment="Center" Foreground="#999999"/>
+                                    </Grid>
+                                </Button>
+
+                                <StackPanel IsVisible="{Binding IsExpanded}" Margin="12,4,12,0" Spacing="2">
+                                    <ItemsControl ItemsSource="{Binding Items}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="ds:SubcategoryItem">
+                                                <Border BorderBrush="#EAEAEA" BorderThickness="0,0,0,1" Padding="0,10">
+                                                    <Grid ColumnDefinitions="*, Auto">
+                                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="#555555" FontSize="14"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Amount}" FontWeight="Medium" Foreground="#111111" FontSize="14"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Command="{Binding AddCategoryCommand}" Background="#1A1A1A" Foreground="White" CornerRadius="12" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="+" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Добавить категорию" FontSize="14" FontWeight="Medium" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="1" Background="White" BorderBrush="#EAEAEA" BorderThickness="0,1,0,0" Padding="0,6">
+            <UniformGrid Columns="4">
+                <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <PathIcon Data="M10,20H4A2,2 0 0,1 2,18V4A2,2 0 0,1 4,2H10V20M14,20H20A2,2 0 0,1 22,18V4A2,2 0 0,1 20,2H14V20Z" Width="20" Height="20" Foreground="#111111"/>
+                    <TextBlock Text="Бюджет" FontSize="10" Foreground="#111111" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <PathIcon Data="M16,17.01V10H14V17.01H11L15,21L19,17.01H16M9,6.99V14H11V6.99H14L10,3L6,6.99H9Z" Width="20" Height="20" Foreground="#888888"/>
+                    <TextBlock Text="Операции" FontSize="10" Foreground="#888888" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <PathIcon Data="M11,2V22C5.9,21.5 2,17.2 2,12C2,6.8 5.9,2.5 11,2M13,2C18.1,2.5 22,6.8 22,12C22,13.7 21.5,15.4 20.6,16.8L13,11.5V2M14.3,18.3L21.4,23.3L23.2,20.8L16.1,15.8L14.3,18.3Z" Width="20" Height="20" Foreground="#888888"/>
+                    <TextBlock Text="Аналитика" FontSize="10" Foreground="#888888" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <PathIcon Data="M2,4H22V7H2V4M2,20V9H22V20A2,2 0 0,1 20,22H4A2,2 0 0,1 2,20M9,13H15V11H9V13Z" Width="20" Height="20" Foreground="#888888"/>
+                    <TextBlock Text="Счета" FontSize="10" Foreground="#888888" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </UniformGrid>
+        </Border>
+
+    </Grid>
+</UserControl>

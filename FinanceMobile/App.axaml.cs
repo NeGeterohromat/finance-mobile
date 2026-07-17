@@ -22,7 +22,9 @@ namespace FinanceMobile
             {
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainViewModel()
+                    Content = new Views.BudgetView(),
+                    Width = 400,
+                    Height = 800
                 };
             }
             else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
