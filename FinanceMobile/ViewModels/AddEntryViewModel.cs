@@ -43,25 +43,37 @@ namespace FinanceMobile.ViewModels
         private string _dateInISOFormat = "";
 
         // TODO: заменить на реальные счета/категории из FinanceMobile.Databases
-        public ObservableCollection<string> AccountOptions { get; } = new()
+        public ObservableCollection<string> AccountOptions { get; private set; } = new()
         {
             "Карта", "Наличные", "Депозит"
         };
 
-        public ObservableCollection<string> CategoryOptions { get; } = new()
-        {
-            "Еда", "Здоровье", "Аренда", "Транспорт"
-        };
+        public ObservableCollection<string> CategoryOptions { get; private set; } = new();
 
         public bool IsTransfer => SelectedType == "Перевод";
         public bool IsNotTransfer => !IsTransfer;
 
         public event Action? RequestClose;
 
+        public AddEntryViewModel()
+        {
+            UpdateCategoryOptions();
+        }
+
         partial void OnSelectedTypeChanged(string value)
         {
             OnPropertyChanged(nameof(IsTransfer));
             OnPropertyChanged(nameof(IsNotTransfer));
+
+            UpdateCategoryOptions();
+        }
+
+        private void UpdateCategoryOptions()
+        {
+            CategoryOptions.Clear();
+
+            foreach(var name in App.AppBudget.GetCategoryNames(selectedTypeToSectionName[SelectedType]))
+                CategoryOptions.Add(name);
         }
 
         [RelayCommand]

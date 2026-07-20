@@ -8,6 +8,7 @@ using FinanceMobile.ViewModels;
 using FinanceMobile.Views;
 using System;
 using System.Linq;
+using SQLitePCL;
 
 namespace FinanceMobile
 {
@@ -29,6 +30,19 @@ namespace FinanceMobile
 
         public override void OnFrameworkInitializationCompleted()
         {
+            // для первоначальной записи данных в бд. Если бд существует на устройстве,
+            // то эти данные оттуда возьмутся сами и этот код нужно закомментировать.
+            //App.AppBudget.AddCategory(Budget.IncomesName, "Зарплата");
+            //App.AppBudget.AddCategory(Budget.IncomesName, "Фриланс");
+            //App.AppBudget.AddCategory(Budget.IncomesName, "Инвестиции");
+            //App.AppBudget.AddCategory(Budget.ExpensesName, "Еда");
+            //App.AppBudget.AddCategory(Budget.ExpensesName, "Аренда");
+            //App.AppBudget.AddCategory(Budget.ExpensesName, "Образование");
+            //App.AppBudget.AddCategory(Budget.ExpensesName, "Кредит");
+            //App.AppBudget.AddOperation(Budget.IncomesName, "Зарплата", DateTime.Now, 20000);
+            //App.AppBudget.AddOperation(Budget.ExpensesName, "Еда", DateTime.Now, 8000);
+            // до сюда
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = new MainWindow

@@ -32,62 +32,20 @@ namespace FinanceMobile.Databases
 
         private void InitializeDatabase()
         {
-            // Выполняем ваш точный SQL-скрипт
-            _db.Execute(@"CREATE TABLE IF NOT EXISTS accounts (
-                id      TEXT PRIMARY KEY,
-                name    TEXT NOT NULL,
-                type    TEXT NOT NULL,
-                balance REAL NOT NULL DEFAULT 0
-            );
+            // 1. Включаем поддержку внешних ключей (обязательно для REFERENCES)
+            _db.Execute("PRAGMA foreign_keys = ON;");
 
-            CREATE TABLE IF NOT EXISTS categories (
-                id    TEXT PRIMARY KEY,
-                name  TEXT NOT NULL,
-                type  TEXT NOT NULL,
-                color TEXT NOT NULL
-            );
+            // 2. Создаем таблицы через ORM (каждый вызов - это отдельный SQL-запрос под капотом)
+            _db.CreateTable<Account>();
+            _db.CreateTable<Category>();
+            _db.CreateTable<Operation>();
+            _db.CreateTable<WeekPlan>();
+            _db.CreateTable<Setting>();
+            _db.CreateTable<PeriodicOperation>();
 
-            CREATE TABLE IF NOT EXISTS operations (
-                id          TEXT PRIMARY KEY,
-                date        TEXT NOT NULL,
-                type        TEXT NOT NULL,
-                status      TEXT NOT NULL,
-                category_id TEXT NOT NULL REFERENCES categories(id),
-                account_id  TEXT NOT NULL REFERENCES accounts(id),
-                amount      REAL NOT NULL,
-                description TEXT NOT NULL DEFAULT ''
-            );
-
-            CREATE INDEX IF NOT EXISTS idx_operations_date ON operations(date);
-            CREATE INDEX IF NOT EXISTS idx_operations_status ON operations(status);
-
-            CREATE TABLE IF NOT EXISTS week_plans (
-                week_start     TEXT PRIMARY KEY,
-                income_plan    REAL NOT NULL DEFAULT 0,
-                expense_plan   REAL NOT NULL DEFAULT 0,
-                income_actual  REAL NOT NULL DEFAULT 0,
-                expense_actual REAL NOT NULL DEFAULT 0
-            );
-
-            CREATE TABLE IF NOT EXISTS settings (
-                key   TEXT PRIMARY KEY,
-                value TEXT NOT NULL
-            );
-
-            CREATE TABLE IF NOT EXISTS recurring_rules (
-                id            TEXT PRIMARY KEY,
-                type          TEXT NOT NULL,
-                category_id   TEXT NOT NULL REFERENCES categories(id),
-                account_id    TEXT NOT NULL REFERENCES accounts(id),
-                amount        REAL NOT NULL,
-                interval_days INTEGER NOT NULL,
-                start_date    TEXT NOT NULL,
-                end_date      TEXT,
-                description   TEXT NOT NULL DEFAULT ''
-            );
-            ALTER TABLE operations ADD COLUMN recurring_id TEXT;");
-
-            //_db.CreateTable<Category>();
+            // 3. Создаем индексы отдельными вызовами Execute
+            _db.Execute("CREATE INDEX IF NOT EXISTS idx_operations_date ON operations(date);");
+            _db.Execute("CREATE INDEX IF NOT EXISTS idx_operations_status ON operations(status);");
 
             var count = _db.ExecuteScalar<int>("SELECT COUNT(*) FROM categories;");
             var count2 = _db.Table<Category>().Count();
