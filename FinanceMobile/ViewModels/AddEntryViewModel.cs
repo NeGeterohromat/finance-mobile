@@ -70,6 +70,8 @@ namespace FinanceMobile.ViewModels
 
         private void UpdateCategoryOptions()
         {
+            if (SelectedType == "Перевод") return;
+
             CategoryOptions.Clear();
 
             foreach(var name in App.AppBudget.GetCategoryNames(selectedTypeToSectionName[SelectedType]))

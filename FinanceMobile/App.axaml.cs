@@ -20,11 +20,17 @@ namespace FinanceMobile
         // Событие, чтобы главное окно знало, что экран изменился
         public static event Action PageChanged;
 
+        public static DateTime UserInputDateTime { get; private set; }
+
         public static Budget AppBudget {  get; private set; }
 
         public override void Initialize()
         {
             AppBudget = Budget.BudgetInstance;
+
+            // Пока захардкожено. Потом изменить.
+            UserInputDateTime = DateTime.Now;
+
             AvaloniaXamlLoader.Load(this);
         }
 
@@ -74,6 +80,11 @@ namespace FinanceMobile
         {
             CurrentPage = viewModel;
             PageChanged?.Invoke();
+        }
+
+        public static void AddDaysToUserDate(int days)
+        {
+            UserInputDateTime = UserInputDateTime.AddDays(days);
         }
     }
 }
