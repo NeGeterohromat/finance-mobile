@@ -118,7 +118,36 @@ namespace FinanceMobile.DataStructs
             var section = sections[sectionName];
             section.AddOperation(categoryName, new Operation() { Date = date, Value = value }, isPlanned, periodInDays);
 
-            if (periodInDays == -1)
+            if (periodInDays >= 1)
+            {
+                var periodicOperation = new Databases.PeriodicOperation()
+                {
+                    StartDate = date,
+                    EndDate = endDate,
+                    Type = databaseOperationTypeNames[sectionName],
+                    CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
+                    AccountId = "", // Пока хз, как работать с аккаунтами.
+                    Amount = value,
+                    Description = "",
+                    IntervalDays = periodInDays
+                };
+                databaseService.SavePeriodicOperation(periodicOperation);
+
+                // для десктопа сохраняю по их правилам, сам игнорирую эти записи
+                var repeatUntil = endDate ?? date.AddDays(SortedOperationList.DefaultMaxDays);
+                for (DateTime i = date; i < repeatUntil; i = i.AddDays(periodInDays))
+                    databaseService.SaveOperation(new Databases.Operation()
+                    {
+                        Date = date,
+                        Type = databaseOperationTypeNames[sectionName],
+                        Status = isPlanned ? "planned" : "actual",
+                        CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
+                        AccountId = "", // Пока хз, как работать с аккаунтами.
+                        Amount = value,
+                        Description = "",
+                        ReccuringId = periodicOperation?.Id
+                    });
+            } else if (periodInDays == -1)
             {
                 databaseService.SaveOperation(new Databases.Operation()
                 {
@@ -128,21 +157,7 @@ namespace FinanceMobile.DataStructs
                     CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
                     AccountId = "", // Пока хз, как работать с аккаунтами.
                     Amount = value,
-                    Description = ""
-                });
-            } else if (periodInDays > 1)
-            {
-                databaseService.SavePeriodicOperation(new Databases.PeriodicOperation()
-                {
-                    StartDate = date,
-                    EndDate = endDate,
-                    Type = databaseOperationTypeNames[sectionName],
-                    //Status = isPlanned ? "planned" : "actual",
-                    CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
-                    AccountId = "", // Пока хз, как работать с аккаунтами.
-                    Amount = value,
                     Description = "",
-                    IntervalDays = periodInDays
                 });
             } else throw new InvalidOperationException($"Period must be positive number, not {periodInDays}");
         }
@@ -180,7 +195,8 @@ namespace FinanceMobile.DataStructs
         private void LoadDataFromDB()
         {
             var categories = databaseService.GetCategoryList().ToDictionary(c => c.Id, c => c);
-            var operations = databaseService.GetOperationList();
+            var operations = databaseService.GetOperationList().Where(o => o.ReccuringId is null);
+            var periodicOperations = databaseService.GetPeriodicoperationList();
 
             foreach (var category in categories.Values)
             {
@@ -192,6 +208,17 @@ namespace FinanceMobile.DataStructs
                 sections[databaseOperationTypeNamesReverse[operation.Type]].AddOperation(categories[operation.CategoryId].Name,
                     new Operation() { Date = operation.Date, Value = operation.Amount },
                     operation.Status == "planned");
+            }
+
+            // пока в UI есть добавление операций только в actual, периодические тоже буду добавлять в actual
+            bool periodicOperationsIsPlanned = false;
+            foreach (var operation in periodicOperations)
+            {
+                sections[databaseOperationTypeNamesReverse[operation.Type]].AddOperation(categories[operation.CategoryId].Name,
+                    new Operation() { Date = operation.StartDate, Value = operation.Amount },
+                    periodicOperationsIsPlanned,
+                    operation.IntervalDays,
+                    operation.EndDate);
             }
         }
     }

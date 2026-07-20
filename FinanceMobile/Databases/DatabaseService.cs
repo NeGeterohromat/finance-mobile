@@ -78,5 +78,7 @@ namespace FinanceMobile.Databases
         public List<Operation> GetOperationList() => _db.Table<Operation>().ToList();
 
         public List<Category> GetCategoryList() => _db.Table<Category>().ToList();
+
+        public List<PeriodicOperation> GetPeriodicoperationList() => _db.Table<PeriodicOperation>().ToList();
     }
 }

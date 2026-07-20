@@ -83,12 +83,7 @@
                     <!-- <Button Grid.Column="0" Content="Выберите дату" HorizontalContentAlignment="Left" Background="#F5F5F5" Foreground="#111111"/> -->
 					<!-- Пока текст для тестов -->
 					<TextBox Grid.Column="0" Text="{Binding DateInISOFormat}" Watermark="Выберите дату" HorizontalContentAlignment="Left" Background="#F5F5F5" Foreground="#111111"/>
-                    <ComboBox Grid.Column="1" SelectedIndex="0" Margin="8,0,0,0" IsVisible="{Binding IsRecurring}">
-                        <ComboBoxItem>Не повторять</ComboBoxItem>
-                        <ComboBoxItem>Ежедневно</ComboBoxItem>
-                        <ComboBoxItem>Еженедельно</ComboBoxItem>
-                        <ComboBoxItem>Ежемесячно</ComboBoxItem>
-                    </ComboBox>
+                    <ComboBox Grid.Column="1" SelectedIndex="0" Margin="8,0,0,0" IsVisible="{Binding IsRecurring}" ItemsSource="{Binding DatePeriods}" SelectedItem="{Binding SelectedPeriod}"/>
                 </Grid>
             </StackPanel>
 

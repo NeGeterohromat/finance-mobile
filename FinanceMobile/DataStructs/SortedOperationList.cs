@@ -7,7 +7,7 @@ namespace FinanceMobile.DataStructs
 {
     public class SortedOperationList
     {
-        public const int DefaultMaxDays = 365 * 5;
+        public const int DefaultMaxDays = 365;
         private class ListNode
         {
             public Operation Operation;
@@ -112,6 +112,7 @@ namespace FinanceMobile.DataStructs
                 First = newNode;
 
                 //Count++;
+                AddPeriodicOperationsIfNeed(periodInDays, endDate, repeatOpeartionUntil, op);
                 return;
             }
             while (!(current.Next is null))
@@ -124,8 +125,9 @@ namespace FinanceMobile.DataStructs
                     current.Last = newNode;
                     // Обновляем предыдущую Node
                     newNode.Last.Next = newNode;
-                    
+
                     //Count++;
+                    AddPeriodicOperationsIfNeed(periodInDays, endDate, repeatOpeartionUntil, op);
                     return;
                 }
                 current = current.Next;
@@ -136,8 +138,12 @@ namespace FinanceMobile.DataStructs
             // Обновляем предыдущую Node
             lastNode.Last.Next = lastNode;
 
+            AddPeriodicOperationsIfNeed(periodInDays, endDate, repeatOpeartionUntil, op);
             //Count++;
+        }
 
+        private void AddPeriodicOperationsIfNeed(int periodInDays, DateTime? endDate, DateTime? repeatOpeartionUntil, Operation op)
+        {
             // Обновляю переменную для цикла добавления периодических операций
             if (periodInDays != -1 && endDate is null)
             {

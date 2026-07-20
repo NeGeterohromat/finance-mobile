@@ -14,6 +14,24 @@ namespace FinanceMobile.ViewModels
             {"Расход",Budget.ExpensesName },
             {"Доход",Budget.IncomesName }
         };
+        private Dictionary<string, int> daysInDatePeriod = new()
+        {
+            { "Не повторять", -1},
+            {"Ежедневно", 1},
+            {"Еженедельно", 7},
+            {"Ежемесячно", 31 }
+        };
+
+        public ObservableCollection<string> DatePeriods { get; } = new()
+        {
+            "Не повторять",
+            "Ежедневно",
+            "Еженедельно",
+            "Ежемесячно"
+        };
+
+        [ObservableProperty]
+        private string _selectedPeriod = "Не повторять";
 
         [ObservableProperty]
         private string _selectedType = "Расход";
@@ -90,11 +108,17 @@ namespace FinanceMobile.ViewModels
             // TODO: сохранить операцию в БД через FinanceMobile.Databases.Operation
             //RequestClose?.Invoke();
 
+            var periodInDays = -1;
+            var isPlanned = false;
+            if (IsRecurring)
+            {
+                periodInDays = daysInDatePeriod[SelectedPeriod];
+            }
             var sectionName = selectedTypeToSectionName[SelectedType];
             var categoryName = SelectedCategory;
             var value = double.Parse(Amount);
             var date = DateTime.Parse(DateInISOFormat);
-            App.AppBudget.AddOperation(sectionName, categoryName, date, value);
+            App.AppBudget.AddOperation(sectionName, categoryName, date, value, isPlanned, periodInDays);
             App.NavigateTo(new BudgetViewModel());
         }
         /*
