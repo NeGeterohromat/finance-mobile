@@ -2,11 +2,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace FinanceMobile.ViewModels
 {
     public partial class AddEntryViewModel : ViewModelBase
     {
+        private readonly BudgetViewModel? _budgetViewModel;
+
         [ObservableProperty]
         private string _selectedType = "Расход";
 
@@ -31,26 +34,41 @@ namespace FinanceMobile.ViewModels
         [ObservableProperty]
         private bool _isRecurring;
 
-        // TODO: заменить на реальные счета/категории из FinanceMobile.Databases
         public ObservableCollection<string> AccountOptions { get; } = new()
         {
             "Карта", "Наличные", "Депозит"
         };
 
-        public ObservableCollection<string> CategoryOptions { get; } = new()
+        // Берём реальные категории из BudgetViewModel, а не хардкодим —
+        // список зависит от того, выбран "Расход" или "Доход"
+        public ObservableCollection<string> CategoryOptions
         {
-            "Еда", "Здоровье", "Аренда", "Транспорт"
-        };
+            get
+            {
+                if (_budgetViewModel is null) return new ObservableCollection<string>();
+
+                string groupTitle = SelectedType == "Доход" ? "Доходы" : "Расходы";
+                var group = _budgetViewModel.Categories.FirstOrDefault(c => c.Title == groupTitle);
+                var names = group?.Items.Select(i => i.Name) ?? Enumerable.Empty<string>();
+                return new ObservableCollection<string>(names);
+            }
+        }
 
         public bool IsTransfer => SelectedType == "Перевод";
         public bool IsNotTransfer => !IsTransfer;
 
         public event Action? RequestClose;
 
+        public AddEntryViewModel(BudgetViewModel? budgetViewModel = null)
+        {
+            _budgetViewModel = budgetViewModel;
+        }
+
         partial void OnSelectedTypeChanged(string value)
         {
             OnPropertyChanged(nameof(IsTransfer));
             OnPropertyChanged(nameof(IsNotTransfer));
+            OnPropertyChanged(nameof(CategoryOptions));
         }
 
         [RelayCommand]
@@ -62,7 +80,8 @@ namespace FinanceMobile.ViewModels
         [RelayCommand]
         private void Add()
         {
-            // TODO: сохранить операцию в БД через FinanceMobile.Databases.Operation
+            if (string.IsNullOrWhiteSpace(Amount)) return; // TODO: показать ошибку валидации в форме
+            _budgetViewModel?.AddOperation(SelectedType, Amount, SelectedCategory, Comment);
             RequestClose?.Invoke();
         }
 

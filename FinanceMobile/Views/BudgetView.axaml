@@ -143,7 +143,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Button Command="{Binding AddCategoryCommand}" Background="#1A1A1A" Foreground="White" CornerRadius="12" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                <Button x:Name="AddCategoryButton" Background="#1A1A1A" Foreground="White" CornerRadius="12" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="+" FontSize="18" FontWeight="Bold"/>
                         <TextBlock Text="Добавить категорию" FontSize="14" FontWeight="Medium" VerticalAlignment="Center"/>
