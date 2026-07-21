@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:FinanceMobile.ViewModels"
+        xmlns:conv="using:FinanceMobile.Converters"
+        x:Class="FinanceMobile.Views.CreateCategoryWindow"
+        x:DataType="vm:CreateCategoryViewModel"
+        Title="Создание категории"
+        SizeToContent="WidthAndHeight"
+        MinWidth="320"
+        Background="#FFFFFF"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True">
+
+    <Window.Resources>
+        <conv:TabSelectionBrushConverter x:Key="TabBrush"/>
+    </Window.Resources>
+
+    <StackPanel Margin="20" Spacing="16">
+
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" Text="Создание категории" FontSize="16" FontWeight="Bold" Foreground="#111111" VerticalAlignment="Center"/>
+            <Button Grid.Column="1" Content="✕" Command="{Binding CloseCommand}" Background="Transparent" Foreground="#999999"/>
+        </Grid>
+
+        <Border Background="#F1F1F1" CornerRadius="12" Padding="4">
+            <UniformGrid Columns="2">
+                <Button Content="Расход" Command="{Binding SelectTypeCommand}" CommandParameter="Расход"
+                        Background="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Расход|#FFFFFF|Transparent'}"
+                        Foreground="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Расход|#111111|#666666'}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+                <Button Content="Доход" Command="{Binding SelectTypeCommand}" CommandParameter="Доход"
+                        Background="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Доход|#FFFFFF|Transparent'}"
+                        Foreground="{Binding SelectedType, Converter={StaticResource TabBrush}, ConverterParameter='Доход|#111111|#666666'}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8"/>
+            </UniformGrid>
+        </Border>
+
+        <StackPanel Spacing="6">
+            <TextBlock Text="Название категории" FontSize="13" Foreground="#666666"/>
+            <TextBox Text="{Binding CategoryName}" Watermark="Например: подписки"/>
+        </StackPanel>
+
+        <Button Content="Создать" Command="{Binding CreateCommand}"
+                Background="#1A1A1A" Foreground="White" CornerRadius="12" Padding="14"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+    </StackPanel>
+</Window>
