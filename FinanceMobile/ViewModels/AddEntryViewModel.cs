@@ -4,6 +4,7 @@ using FinanceMobile.DataStructs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace FinanceMobile.ViewModels
 {
@@ -61,10 +62,7 @@ namespace FinanceMobile.ViewModels
         private string _dateInISOFormat = "";
 
         // TODO: заменить на реальные счета/категории из FinanceMobile.Databases
-        public ObservableCollection<string> AccountOptions { get; private set; } = new()
-        {
-            "Карта", "Наличные", "Депозит"
-        };
+        public ObservableCollection<string> AccountOptions { get; private set; } = new();
 
         public ObservableCollection<string> CategoryOptions { get; private set; } = new();
 
@@ -76,6 +74,7 @@ namespace FinanceMobile.ViewModels
         public AddEntryViewModel()
         {
             UpdateCategoryOptions();
+            UpdateAccountOptions();
         }
 
         partial void OnSelectedTypeChanged(string value)
@@ -94,6 +93,14 @@ namespace FinanceMobile.ViewModels
 
             foreach(var name in App.AppBudget.GetCategoryNames(selectedTypeToSectionName[SelectedType]))
                 CategoryOptions.Add(name);
+        }
+
+        private void UpdateAccountOptions()
+        {
+            AccountOptions.Clear();
+
+            foreach (var name in App.AppBudget.GetAccountNames().Concat(App.AppBudget.GetDepositeNames()))
+                AccountOptions.Add(name);
         }
 
         [RelayCommand]
@@ -118,7 +125,8 @@ namespace FinanceMobile.ViewModels
             var categoryName = SelectedCategory;
             var value = double.Parse(Amount);
             var date = DateTime.Parse(DateInISOFormat);
-            App.AppBudget.AddOperation(sectionName, categoryName, date, value, isPlanned, periodInDays);
+            var accID = App.AppBudget.GetAccountID(SelectedAccount);
+            App.AppBudget.AddOperation(sectionName, categoryName, date, accID, value, isPlanned, periodInDays);
             App.NavigateTo(new BudgetViewModel());
         }
         /*

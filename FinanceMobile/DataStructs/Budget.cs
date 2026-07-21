@@ -21,6 +21,22 @@ namespace FinanceMobile.DataStructs
         private Dictionary<string, Deposite> deposites;
         private DatabaseService databaseService;
 
+        private enum AccountType
+        {
+            Cash,
+            Card,
+            Deposite,
+            Credit
+        }
+
+        private Dictionary<AccountType, string> databaseAccountTypes = new()
+        {
+            {AccountType.Cash, "cash" },
+            {AccountType.Card,"card" },
+            {AccountType.Deposite, "savings" },
+            {AccountType.Credit, "credit" }
+        };
+
         private Dictionary<string, string> databaseOperationTypeNames = new()
         {
             {IncomesName,"income" },
@@ -51,18 +67,29 @@ namespace FinanceMobile.DataStructs
 
         public void AddAccount(string name, double initialBalance = 0)
         {
-            if (accounts.ContainsKey(name)) throw new InvalidOperationException($"Account with name {name} already exists");
+            if (deposites.ContainsKey(name) || accounts.ContainsKey(name)) throw new InvalidOperationException($"Account or Deposite with name {name} already exists");
             accounts[name] = initialBalance;
 
-            // TODO сохранение в бд
+            // захардкожено
+            var selectedType = AccountType.Card;
+
+            databaseService.SaveAccount(new Account()
+            {
+                Name = name,
+                Type = databaseAccountTypes[selectedType],
+                Balance = initialBalance
+            });
         }
 
         public void RewriteAccountBalance(string name, double balance)
         {
             if (accounts.ContainsKey(name))
             {
-                // TODO сохранение в бд
                 accounts[name] = balance;
+
+                var acc = databaseService.GetAccount(name);
+                acc.Balance = balance;
+                databaseService.SaveAccount(acc);
             }
             else throw new InvalidOperationException($"Account with name {name} does not exists");
         }
@@ -74,29 +101,64 @@ namespace FinanceMobile.DataStructs
 
         public void AddDeposite(string name)
         {
-            if (deposites.ContainsKey(name)) throw new InvalidOperationException($"Deposite with name {name} already exists");
+            if (deposites.ContainsKey(name) || accounts.ContainsKey(name)) throw new InvalidOperationException($"Deposite or Account with name {name} already exists");
             deposites[name] = new(name);
+
+            databaseService.SaveAccount(new Account()
+            {
+                Name = name,
+                Type = databaseAccountTypes[AccountType.Deposite],
+                Balance = 0
+            });
         }
 
         public void AddRefillToDeposite(string name, Operation refill, bool isPlanned = false)
         {
             deposites[name].AddOperation(Deposite.Refill, refill, isPlanned);
+
+            var depo = databaseService.GetAccount(name);
+            depo.Balance = deposites[name].GetDepositeResult(null, isPlanned);
+            databaseService.SaveAccount(depo);
         }
 
         public void AddPercentsToDeposite(string name, Operation percents, bool isPlanned = false)
         {
             deposites[name].AddOperation(Deposite.Percents, percents, isPlanned);
+
+            var depo = databaseService.GetAccount(name);
+            depo.Balance = deposites[name].GetDepositeResult(null, isPlanned);
+            databaseService.SaveAccount(depo);
         }
 
         public void AddWriteDownsToDeposite(string name, Operation writeDowns, bool isPlanned = false)
         {
             deposites[name].AddOperation(Deposite.WriteDowns, writeDowns, isPlanned);
+
+            var depo = databaseService.GetAccount(name);
+            depo.Balance = deposites[name].GetDepositeResult(null, isPlanned);
+            databaseService.SaveAccount(depo);
         }
 
         // Счёт на депозите всегда считается с самого начала этого депозита.
         public double GetDepositeResult(string name, DateTime? dateEnd = null, bool isPlanned = false)
         {
             return deposites[name].GetDepositeResult(dateEnd, isPlanned);
+        }
+
+        public IEnumerable<string> GetAccountNames()
+        {
+            foreach (var  account in accounts)
+            {
+                yield return account.Key;
+            }
+        }
+
+        public IEnumerable<string> GetDepositeNames()
+        {
+            foreach (var depo in deposites)
+            {
+                yield return depo.Key;
+            }
         }
 
         public void AddCategory(string sectionName, string categoryName)
@@ -112,11 +174,16 @@ namespace FinanceMobile.DataStructs
             });
         }
 
-        public void AddOperation(string sectionName, string categoryName, DateTime date, double value, bool isPlanned = false,
+        public string GetAccountID(string name)
+        {
+            return databaseService.GetAccount(name).Id;
+        }
+
+        public void AddOperation(string sectionName, string categoryName, DateTime date, string accountID, double value, bool isPlanned = false,
             int periodInDays = -1, DateTime? endDate = null)
         {
             var section = sections[sectionName];
-            section.AddOperation(categoryName, new Operation() { Date = date, Value = value }, isPlanned, periodInDays);
+            section.AddOperation(categoryName, new Operation() { Date = date, Value = value, AccountId = accountID }, isPlanned, periodInDays);
 
             if (periodInDays >= 1)
             {
@@ -142,7 +209,7 @@ namespace FinanceMobile.DataStructs
                         Type = databaseOperationTypeNames[sectionName],
                         Status = isPlanned ? "planned" : "actual",
                         CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
-                        AccountId = "", // Пока хз, как работать с аккаунтами.
+                        AccountId = accountID, 
                         Amount = value,
                         Description = "",
                         ReccuringId = periodicOperation?.Id
@@ -155,7 +222,7 @@ namespace FinanceMobile.DataStructs
                     Type = databaseOperationTypeNames[sectionName],
                     Status = isPlanned ? "planned" : "actual",
                     CategoryId = databaseService.GetCategoryID(categoryName, databaseOperationTypeNames[sectionName]),
-                    AccountId = "", // Пока хз, как работать с аккаунтами.
+                    AccountId = accountID,
                     Amount = value,
                     Description = "",
                 });
@@ -206,7 +273,7 @@ namespace FinanceMobile.DataStructs
             foreach (var operation in operations)
             {
                 sections[databaseOperationTypeNamesReverse[operation.Type]].AddOperation(categories[operation.CategoryId].Name,
-                    new Operation() { Date = operation.Date, Value = operation.Amount },
+                    new Operation() { Date = operation.Date, Value = operation.Amount, AccountId = operation.AccountId },
                     operation.Status == "planned");
             }
 

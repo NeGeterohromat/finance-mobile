@@ -67,6 +67,11 @@ namespace FinanceMobile.Databases
             _db.InsertOrReplace(cat);
         }
 
+        public void SaveAccount(Account acc)
+        {
+            _db.InsertOrReplace(acc);
+        }
+
         public string GetCategoryID(string name, string type)
         {
             return _db.Table<Category>()
@@ -75,10 +80,26 @@ namespace FinanceMobile.Databases
               .Id;
         }
 
+        public Account GetAccount(string name)
+        {
+            return _db.Table<Account>()
+              .Where(a => a.Name == name)
+              .FirstOrDefault();
+        }
+
+        public Account GetAccountByID(string id)
+        {
+            return _db.Table<Account>()
+              .Where(a => a.Id == id)
+              .FirstOrDefault();
+        }
+
         public List<Operation> GetOperationList() => _db.Table<Operation>().ToList();
 
         public List<Category> GetCategoryList() => _db.Table<Category>().ToList();
 
         public List<PeriodicOperation> GetPeriodicoperationList() => _db.Table<PeriodicOperation>().ToList();
+
+        public List<Account> GetAccountList() => _db.Table<Account>().ToList();
     }
 }

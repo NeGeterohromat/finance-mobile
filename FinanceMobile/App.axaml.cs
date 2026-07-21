@@ -38,6 +38,9 @@ namespace FinanceMobile
         {
             // для первоначальной записи данных в бд. Если бд существует на устройстве,
             // то эти данные оттуда возьмутся сами и этот код нужно закомментировать.
+            //App.AppBudget.AddAccount("Карта", 25000);
+            //App.AppBudget.AddAccount("Наличные", 5000);
+            //App.AppBudget.AddDeposite("Депозит1");
             //App.AppBudget.AddCategory(Budget.IncomesName, "Зарплата");
             //App.AppBudget.AddCategory(Budget.IncomesName, "Фриланс");
             //App.AppBudget.AddCategory(Budget.IncomesName, "Инвестиции");
@@ -45,8 +48,8 @@ namespace FinanceMobile
             //App.AppBudget.AddCategory(Budget.ExpensesName, "Аренда");
             //App.AppBudget.AddCategory(Budget.ExpensesName, "Образование");
             //App.AppBudget.AddCategory(Budget.ExpensesName, "Кредит");
-            //App.AppBudget.AddOperation(Budget.IncomesName, "Зарплата", DateTime.Now, 20000);
-            //App.AppBudget.AddOperation(Budget.ExpensesName, "Еда", DateTime.Now, 8000);
+            //App.AppBudget.AddOperation(Budget.IncomesName, "Зарплата", DateTime.Now, App.AppBudget.GetAccountID("Карта"), 20000);
+            //App.AppBudget.AddOperation(Budget.ExpensesName, "Еда", DateTime.Now, App.AppBudget.GetAccountID("Карта"), 8000);
             // до сюда
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
