@@ -1,15 +1,16 @@
 using Avalonia.Controls;
+using CommunityToolkit.Mvvm.Input;
 using FinanceMobile.ViewModels;
 
 namespace FinanceMobile.Views
 {
-    public partial class AddEntryWindow : Window
+    public partial class AddEntryWindow : UserControl
     {
-        public AddEntryWindow(BudgetViewModel budgetViewModel)
+        public AddEntryWindow()
         {
             InitializeComponent();
-            var vm = new AddEntryViewModel(budgetViewModel);
-            vm.RequestClose += () => Close();
+            var vm = new AddEntryViewModel();
+            //vm.RequestClose += () => Close();
             DataContext = vm;
         }
     }

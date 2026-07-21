@@ -1,5 +1,7 @@
-﻿using System;
+﻿using FinanceMobile.Databases;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
@@ -8,68 +10,57 @@ namespace FinanceMobile.DataStructs
 {
     public class Section
     {
-        public const string TotalsName = "totals";
         public string Name { get; private set; }
 
-        public int WeeksCount { get; private set; }
-        public DateTime WeeksStart { get; private set; }
-        public int CategoriesCount { get { return categories.Count; } }
-        private Dictionary<string,Category> categories;
+        public int CategoriesCount { get { return categoriesActual.Count; } }
+        private Dictionary<string,Category> categoriesActual;
+        private Dictionary<string, Category> categoriesPlanned;
 
-        private Category totals;
-
-        public Section(string name, int weeksCount, DateTime? weeksStart = null)
+        public Section(string name)
         {
             Name = name;
-            categories = new();
-            WeeksCount = weeksCount;
-            if (weeksStart is null)
-                WeeksStart = DateTime.Today;
-            else
-                WeeksStart = (DateTime)weeksStart;
-            totals = new Category(weeksCount, TotalsName, WeeksStart);
+            categoriesActual = new();
+            categoriesPlanned = new();
         }
 
         public void AddCategory(string name) 
         {
-            if (categories.ContainsKey(name)) throw new InvalidOperationException($"Category with name {name} already exists");
-            categories[name] = new Category(WeeksCount, name, WeeksStart);
+            if (categoriesActual.ContainsKey(name)) throw new InvalidOperationException($"Category with name {name} already exists");
+            
+            categoriesActual[name] = new Category(name);
+            categoriesPlanned[name] = new Category(name);
         }
 
-        public Cell this[string name, Week week]
+        public void AddOperation(string categoryName, Operation op, bool isPlanned = false, int periodInDays = -1, DateTime? endDate = null)
         {
-            get 
-            { 
-                if (name == TotalsName) 
-                    return totals[week];
-                return categories[name][week];
-            }
+            var categories = isPlanned ? categoriesPlanned : categoriesActual;
+            if (!categories.TryGetValue(categoryName, out var cat)) throw new InvalidOperationException($"Editable Category with name {categoryName} does not exists");
+
+            cat.AddOperation(op, periodInDays, endDate);
         }
 
-        public void AddOperation(string category, Operation op)
+        public IEnumerable<Operation> GetOperations(string categoryName, DateTime? dateStart = null, DateTime? dateEnd = null, bool isPlanned = false)
         {
-            if (!categories.TryGetValue(category, out var cat)) throw new InvalidOperationException($"Editable Category with name {category} does not exists");
-
-            var week = cat.AddOperation(op);
-
-            totals.AddOperation(op,week);
+            var categories = isPlanned ? categoriesPlanned : categoriesActual;
+            foreach (var op in categories[categoryName].GetOperations(dateStart, dateEnd))
+                yield return op;
         }
 
-        public IEnumerable<(string,Week,Cell)> GetCellsWithoutTotals()
+        public double GetCategorySum(string categoryName, DateTime? dateStart = null, DateTime? dateEnd = null, bool isPlanned = false) =>
+            GetOperations(categoryName,dateStart,dateEnd,isPlanned).Select(op=>op.Value).Sum();
+
+        public double GetSum(DateTime? dateStart = null, DateTime? dateEnd = null, bool isPlanned = false) => 
+            (isPlanned ? categoriesPlanned : categoriesActual).Values
+            .SelectMany(c => c.GetOperations(dateStart, dateEnd))
+            .Select(op => op.Value)
+            .Sum();
+
+        public IEnumerable<string> GetCategoryNames()
         {
-            foreach (var pair in categories) 
+            foreach (var cat in categoriesActual.Keys)
             {
-                foreach (var cellPair in pair.Value.GetCells())
-                {
-                    yield return (pair.Key, cellPair.Item1, cellPair.Item2);
-                }
+                yield return cat;
             }
-            /*
-            foreach (var cellPair in totals.GetCells())
-            {
-                yield return (TotalsName,cellPair.Item1,cellPair.Item2);
-            }
-            */
-        } 
+        }
     }
 }

@@ -8,25 +8,18 @@ namespace FinanceMobile.Views
         public BudgetView()
         {
             InitializeComponent();
-            var vm = new BudgetViewModel();
-            DataContext = vm;
+            DataContext = new BudgetViewModel();
 
             AddEntryButton.Click += (_, _) =>
             {
-                var window = new AddEntryWindow(vm);
+                App.NavigateTo(new AddEntryViewModel());
+                /*
+                var window = new AddEntryWindow();
                 if (TopLevel.GetTopLevel(this) is Window owner)
                     window.ShowDialog(owner);
                 else
                     window.Show();
-            };
-
-            AddCategoryButton.Click += (_, _) =>
-            {
-                var window = new CreateCategoryWindow(vm);
-                if (TopLevel.GetTopLevel(this) is Window owner)
-                    window.ShowDialog(owner);
-                else
-                    window.Show();
+                */
             };
         }
     }

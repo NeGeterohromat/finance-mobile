@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FinanceMobile.DataStructs;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -8,7 +10,29 @@ namespace FinanceMobile.ViewModels
 {
     public partial class AddEntryViewModel : ViewModelBase
     {
-        private readonly BudgetViewModel? _budgetViewModel;
+        private Dictionary<string, string> selectedTypeToSectionName = new()
+        {
+            {"Расход",Budget.ExpensesName },
+            {"Доход",Budget.IncomesName }
+        };
+        private Dictionary<string, int> daysInDatePeriod = new()
+        {
+            { "Не повторять", -1},
+            {"Ежедневно", 1},
+            {"Еженедельно", 7},
+            {"Ежемесячно", 31 }
+        };
+
+        public ObservableCollection<string> DatePeriods { get; } = new()
+        {
+            "Не повторять",
+            "Ежедневно",
+            "Еженедельно",
+            "Ежемесячно"
+        };
+
+        [ObservableProperty]
+        private string _selectedPeriod = "Не повторять";
 
         [ObservableProperty]
         private string _selectedType = "Расход";
@@ -34,41 +58,49 @@ namespace FinanceMobile.ViewModels
         [ObservableProperty]
         private bool _isRecurring;
 
-        public ObservableCollection<string> AccountOptions { get; } = new()
-        {
-            "Карта", "Наличные", "Депозит"
-        };
+        [ObservableProperty]
+        private string _dateInISOFormat = "";
 
-        // Берём реальные категории из BudgetViewModel, а не хардкодим —
-        // список зависит от того, выбран "Расход" или "Доход"
-        public ObservableCollection<string> CategoryOptions
-        {
-            get
-            {
-                if (_budgetViewModel is null) return new ObservableCollection<string>();
+        // TODO: заменить на реальные счета/категории из FinanceMobile.Databases
+        public ObservableCollection<string> AccountOptions { get; private set; } = new();
 
-                string groupTitle = SelectedType == "Доход" ? "Доходы" : "Расходы";
-                var group = _budgetViewModel.Categories.FirstOrDefault(c => c.Title == groupTitle);
-                var names = group?.Items.Select(i => i.Name) ?? Enumerable.Empty<string>();
-                return new ObservableCollection<string>(names);
-            }
-        }
+        public ObservableCollection<string> CategoryOptions { get; private set; } = new();
 
         public bool IsTransfer => SelectedType == "Перевод";
         public bool IsNotTransfer => !IsTransfer;
 
         public event Action? RequestClose;
 
-        public AddEntryViewModel(BudgetViewModel? budgetViewModel = null)
+        public AddEntryViewModel()
         {
-            _budgetViewModel = budgetViewModel;
+            UpdateCategoryOptions();
+            UpdateAccountOptions();
         }
 
         partial void OnSelectedTypeChanged(string value)
         {
             OnPropertyChanged(nameof(IsTransfer));
             OnPropertyChanged(nameof(IsNotTransfer));
-            OnPropertyChanged(nameof(CategoryOptions));
+
+            UpdateCategoryOptions();
+        }
+
+        private void UpdateCategoryOptions()
+        {
+            if (SelectedType == "Перевод") return;
+
+            CategoryOptions.Clear();
+
+            foreach(var name in App.AppBudget.GetCategoryNames(selectedTypeToSectionName[SelectedType]))
+                CategoryOptions.Add(name);
+        }
+
+        private void UpdateAccountOptions()
+        {
+            AccountOptions.Clear();
+
+            foreach (var name in App.AppBudget.GetAccountNames().Concat(App.AppBudget.GetDepositeNames()))
+                AccountOptions.Add(name);
         }
 
         [RelayCommand]
@@ -80,12 +112,32 @@ namespace FinanceMobile.ViewModels
         [RelayCommand]
         private void Add()
         {
-            if (string.IsNullOrWhiteSpace(Amount)) return; // TODO: показать ошибку валидации в форме
-            _budgetViewModel?.AddOperation(SelectedType, Amount, SelectedCategory, Comment);
-            RequestClose?.Invoke();
-        }
+            // TODO: сохранить операцию в БД через FinanceMobile.Databases.Operation
+            //RequestClose?.Invoke();
 
+            var periodInDays = -1;
+            var isPlanned = false;
+            if (IsRecurring)
+            {
+                periodInDays = daysInDatePeriod[SelectedPeriod];
+            }
+            var sectionName = selectedTypeToSectionName[SelectedType];
+            var categoryName = SelectedCategory;
+            var value = double.Parse(Amount);
+            var date = DateTime.Parse(DateInISOFormat);
+            var accID = App.AppBudget.GetAccountID(SelectedAccount);
+            App.AppBudget.AddOperation(sectionName, categoryName, date, accID, value, isPlanned, periodInDays);
+            App.NavigateTo(new BudgetViewModel());
+        }
+        /*
         [RelayCommand]
         private void Close() => RequestClose?.Invoke();
+        */
+
+        [RelayCommand]
+        private void Close()
+        {
+            App.NavigateTo(new BudgetViewModel());
+        }
     }
 }

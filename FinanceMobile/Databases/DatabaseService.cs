@@ -32,91 +32,74 @@ namespace FinanceMobile.Databases
 
         private void InitializeDatabase()
         {
-            // Выполняем ваш точный SQL-скрипт
-            _db.Execute(@"CREATE TABLE IF NOT EXISTS accounts (
-                id      TEXT PRIMARY KEY,
-                name    TEXT NOT NULL,
-                type    TEXT NOT NULL,
-                balance REAL NOT NULL DEFAULT 0
-            );
+            // 1. Включаем поддержку внешних ключей (обязательно для REFERENCES)
+            _db.Execute("PRAGMA foreign_keys = ON;");
 
-            CREATE TABLE IF NOT EXISTS categories (
-                id    TEXT PRIMARY KEY,
-                name  TEXT NOT NULL,
-                type  TEXT NOT NULL,
-                color TEXT NOT NULL
-            );
+            // 2. Создаем таблицы через ORM (каждый вызов - это отдельный SQL-запрос под капотом)
+            _db.CreateTable<Account>();
+            _db.CreateTable<Category>();
+            _db.CreateTable<Operation>();
+            _db.CreateTable<WeekPlan>();
+            _db.CreateTable<Setting>();
+            _db.CreateTable<PeriodicOperation>();
 
-            CREATE TABLE IF NOT EXISTS operations (
-                id          TEXT PRIMARY KEY,
-                date        TEXT NOT NULL,
-                type        TEXT NOT NULL,
-                status      TEXT NOT NULL,
-                category_id TEXT NOT NULL REFERENCES categories(id),
-                account_id  TEXT NOT NULL REFERENCES accounts(id),
-                amount      REAL NOT NULL,
-                description TEXT NOT NULL DEFAULT ''
-            );
+            // 3. Создаем индексы отдельными вызовами Execute
+            _db.Execute("CREATE INDEX IF NOT EXISTS idx_operations_date ON operations(date);");
+            _db.Execute("CREATE INDEX IF NOT EXISTS idx_operations_status ON operations(status);");
 
-            CREATE INDEX IF NOT EXISTS idx_operations_date ON operations(date);
-            CREATE INDEX IF NOT EXISTS idx_operations_status ON operations(status);
-
-            CREATE TABLE IF NOT EXISTS week_plans (
-                week_start     TEXT PRIMARY KEY,
-                income_plan    REAL NOT NULL DEFAULT 0,
-                expense_plan   REAL NOT NULL DEFAULT 0,
-                income_actual  REAL NOT NULL DEFAULT 0,
-                expense_actual REAL NOT NULL DEFAULT 0
-            );
-
-            CREATE TABLE IF NOT EXISTS settings (
-                key   TEXT PRIMARY KEY,
-                value TEXT NOT NULL
-            );");
+            var count = _db.ExecuteScalar<int>("SELECT COUNT(*) FROM categories;");
+            var count2 = _db.Table<Category>().Count();
+            var c = 454;
         }
 
-        // Сохранить все ячейки (удаляет старые и записывает новые)
-        /*
-        public void SaveAllCells(List<Section> sections)
+        public void SaveOperation(Operation op)
         {
-            _db.RunInTransaction(() =>
-            {
-                _db.DeleteAll<CellRecord>(); // Очищаем таблицу
-
-                foreach (var sect in sections)
-                {
-                    foreach (var cellData in sect.GetCellsWithoutTotals())
-                    {
-                        _db.Insert(new CellRecord
-                        {
-                            SectionName = sect.Name,
-                            CategoryName = cellData.Item1,
-                            WeekStart = cellData.Item2.StartDay,
-                            Value = cellData.Item3.Value
-                        });
-                    }
-                }
-            });
+            _db.InsertOrReplace(op);
         }
-        */
-        
 
-        // Загрузить все ячейки
-        /*
-        public Dictionary<string,Dictionary<string,Dictionary<DateTime,double>>> LoadAllCells()
+        public void SavePeriodicOperation(PeriodicOperation op)
         {
-            var records = _db.Table<CellRecord>().ToList();
-            var sections = new Dictionary<string, Dictionary<string, Dictionary<DateTime, double>>>();
-            foreach (var record in records)
-            {
-                if (!sections.ContainsKey(record.SectionName)) sections[record.SectionName] = new();
-
-                if (!sections[record.SectionName].ContainsKey(record.CategoryName)) sections[record.SectionName][record.CategoryName] = new();
-
-                sections[record.SectionName][record.CategoryName][record.WeekStart] = record.Value;
-            }
-            return sections;
+            _db.InsertOrReplace(op);
         }
-        */
+
+        public void SaveCategory(Category cat)
+        {
+            _db.InsertOrReplace(cat);
+        }
+
+        public void SaveAccount(Account acc)
+        {
+            _db.InsertOrReplace(acc);
+        }
+
+        public string GetCategoryID(string name, string type)
+        {
+            return _db.Table<Category>()
+              .Where(c => c.Name == name && c.Type == type)
+              .FirstOrDefault()
+              .Id;
+        }
+
+        public Account GetAccount(string name)
+        {
+            return _db.Table<Account>()
+              .Where(a => a.Name == name)
+              .FirstOrDefault();
+        }
+
+        public Account GetAccountByID(string id)
+        {
+            return _db.Table<Account>()
+              .Where(a => a.Id == id)
+              .FirstOrDefault();
+        }
+
+        public List<Operation> GetOperationList() => _db.Table<Operation>().ToList();
+
+        public List<Category> GetCategoryList() => _db.Table<Category>().ToList();
+
+        public List<PeriodicOperation> GetPeriodicoperationList() => _db.Table<PeriodicOperation>().ToList();
+
+        public List<Account> GetAccountList() => _db.Table<Account>().ToList();
     }
 }

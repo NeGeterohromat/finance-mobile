@@ -1,26 +1,32 @@
-﻿using SQLite;
-using System;
+﻿using System;
+using SQLite;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FinanceMobile.Databases
 {
-    [Table("operations")]
-    public class Operation
+    [Table("recurring_rules")]
+    public class PeriodicOperation
     {
         [PrimaryKey]
         [Column("id")]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
-        [Column("date")]
-        public DateTime Date { get; set; } 
+        [Column("start_date")]
+        public DateTime StartDate { get; set; }
+
+        [Column("end_date")]
+        public DateTime? EndDate { get; set; }
+
+        [Column("interval_days")]
+        public int IntervalDays { get; set; }
 
         [Column("type")]
         public string Type { get; set; }
-
+        /*
         [Column("status")]
         public string Status { get; set; }
-
+        */
         [Column("category_id")]
         public string CategoryId { get; set; } // Связь работает только логически в C#
 
@@ -32,8 +38,5 @@ namespace FinanceMobile.Databases
 
         [Column("description")]
         public string Description { get; set; } = ""; // Инициализация вместо DEFAULT ''
-
-        [Column("recurring_id")]
-        public string ReccuringId { get; set; }
     }
 }

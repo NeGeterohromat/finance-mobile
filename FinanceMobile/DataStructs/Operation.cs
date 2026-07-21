@@ -8,5 +8,6 @@ namespace FinanceMobile.DataStructs
     {
         public double Value;
         public DateTime Date;
+        public string AccountId;
     }
 }
