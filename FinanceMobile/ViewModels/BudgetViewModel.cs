@@ -153,10 +153,17 @@ namespace FinanceMobile.ViewModels
             UpdateCategories();
         }
 
-        [RelayCommand]
-        private void AddCategory()
+        public void AddCategory(string type, string categoryName)
         {
-            // TODO: открыть модалку "Создание категории" — сверстаем следующим шагом
+            string groupTitle = type == "Доход" ? "Доходы" : "Расходы";
+            var group = Categories.FirstOrDefault(c => c.Title == groupTitle);
+            if (group is null) return;
+
+            if (group.Items.Any(i => i.Name == categoryName)) return;
+
+            group.Items.Add(new SubcategoryItem { Name = categoryName, Amount = "-" });
+            group.IsExpanded = true;
+            UpdateCategories();
         }
     }
 }
