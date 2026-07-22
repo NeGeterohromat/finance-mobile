@@ -37,6 +37,8 @@ namespace FinanceMobile.DataStructs
             {AccountType.Credit, "credit" }
         };
 
+        private Dictionary<string, AccountType> databaseAccountTypesReverse = new();
+
         private Dictionary<string, string> databaseOperationTypeNames = new()
         {
             {IncomesName,"income" },
@@ -59,6 +61,7 @@ namespace FinanceMobile.DataStructs
             };
 
             databaseOperationTypeNamesReverse = databaseOperationTypeNames.ToDictionary(pair => pair.Value, pair => pair.Key);
+            databaseAccountTypesReverse = databaseAccountTypes.ToDictionary(pair => pair.Value, pair => pair.Key);
 
             databaseService = DatabaseService.DatabaseServiceInstance;
 
@@ -264,6 +267,7 @@ namespace FinanceMobile.DataStructs
             var categories = databaseService.GetCategoryList().ToDictionary(c => c.Id, c => c);
             var operations = databaseService.GetOperationList().Where(o => o.ReccuringId is null);
             var periodicOperations = databaseService.GetPeriodicoperationList();
+            var accounts = databaseService.GetAccountList();
 
             foreach (var category in categories.Values)
             {
@@ -286,6 +290,19 @@ namespace FinanceMobile.DataStructs
                     periodicOperationsIsPlanned,
                     operation.IntervalDays,
                     operation.EndDate);
+            }
+
+            foreach (var acc in accounts)
+            {
+                if (databaseAccountTypesReverse[acc.Type] == AccountType.Deposite)
+                {
+                    AddDeposite(acc.Name);
+                    AddRefillToDeposite(acc.Name, new Operation() { AccountId = acc.Id, Value = acc.Balance, Date = DateTime.Now });
+                }
+                else
+                {
+                    AddAccount(acc.Name,acc.Balance);
+                }
             }
         }
     }

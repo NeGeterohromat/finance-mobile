@@ -18,11 +18,7 @@ namespace FinanceMobile.Views
 
             AddCategoryButton.Click += (_, _) =>
             {
-                var window = new CreateCategoryWindow(vm);
-                if (TopLevel.GetTopLevel(this) is Window owner)
-                    window.ShowDialog(owner);
-                else
-                    window.Show();
+                App.NavigateTo(new CreateCategoryViewModel());
             };
         }
     }

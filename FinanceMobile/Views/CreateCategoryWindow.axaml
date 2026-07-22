@@ -1,19 +1,18 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:FinanceMobile.ViewModels"
-        xmlns:conv="using:FinanceMobile.Converters"
-        x:Class="FinanceMobile.Views.CreateCategoryWindow"
-        x:DataType="vm:CreateCategoryViewModel"
-        Title="Создание категории"
-        SizeToContent="WidthAndHeight"
-        MinWidth="320"
-        Background="#FFFFFF"
-        WindowStartupLocation="CenterOwner"
-        CanResize="True">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:FinanceMobile.ViewModels"
+             xmlns:ds="using:FinanceMobile.DataStructs"
+             xmlns:conv="using:FinanceMobile.Converters"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+             x:Class="FinanceMobile.Views.CreateCategoryWindow"
+             x:DataType="vm:CreateCategoryViewModel"
+             Background="#FAFAFA">
 
-    <Window.Resources>
+	<UserControl.Resources>
         <conv:TabSelectionBrushConverter x:Key="TabBrush"/>
-    </Window.Resources>
+    </UserControl.Resources>
 
     <StackPanel Margin="20" Spacing="16">
 
@@ -45,4 +44,4 @@
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
 
     </StackPanel>
-</Window>
+</UserControl>

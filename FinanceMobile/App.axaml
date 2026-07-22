@@ -17,6 +17,10 @@
 		<DataTemplate DataType="vm:AddEntryViewModel">
 			<v:AddEntryWindow />
 		</DataTemplate>
+
+		<DataTemplate DataType="vm:CreateCategoryViewModel">
+			<v:CreateCategoryWindow />
+		</DataTemplate>
 	</Application.DataTemplates>
 
     <Application.Styles>

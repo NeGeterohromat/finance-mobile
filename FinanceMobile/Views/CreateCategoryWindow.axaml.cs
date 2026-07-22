@@ -3,13 +3,12 @@ using FinanceMobile.ViewModels;
 
 namespace FinanceMobile.Views
 {
-    public partial class CreateCategoryWindow : Window
+    public partial class CreateCategoryWindow : UserControl
     {
-        public CreateCategoryWindow(BudgetViewModel budgetViewModel)
+        public CreateCategoryWindow()
         {
             InitializeComponent();
-            var vm = new CreateCategoryViewModel(budgetViewModel);
-            vm.RequestClose += () => Close();
+            var vm = new CreateCategoryViewModel();
             DataContext = vm;
         }
     }

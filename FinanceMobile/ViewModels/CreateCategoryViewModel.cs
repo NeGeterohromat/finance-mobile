@@ -1,12 +1,18 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FinanceMobile.DataStructs;
 using System;
+using System.Collections.Generic;
 
 namespace FinanceMobile.ViewModels
 {
     public partial class CreateCategoryViewModel : ViewModelBase
     {
-        private readonly BudgetViewModel _budgetViewModel;
+        private Dictionary<string, string> selectedTypeToSectionName = new()
+        {
+            {"Расход",Budget.ExpensesName },
+            {"Доход",Budget.IncomesName }
+        };
 
         [ObservableProperty]
         private string _selectedType = "Расход";
@@ -16,11 +22,6 @@ namespace FinanceMobile.ViewModels
 
         public event Action? RequestClose;
 
-        public CreateCategoryViewModel(BudgetViewModel budgetViewModel)
-        {
-            _budgetViewModel = budgetViewModel;
-        }
-
         [RelayCommand]
         private void SelectType(string type) => SelectedType = type;
 
@@ -28,11 +29,11 @@ namespace FinanceMobile.ViewModels
         private void Create()
         {
             if (string.IsNullOrWhiteSpace(CategoryName)) return;
-            _budgetViewModel.AddCategory(SelectedType, CategoryName.Trim());
-            RequestClose?.Invoke();
+            App.AppBudget.AddCategory(selectedTypeToSectionName[SelectedType], CategoryName);
+            App.NavigateTo(new BudgetViewModel());
         }
 
         [RelayCommand]
-        private void Close() => RequestClose?.Invoke();
+        private void Close() => App.NavigateTo(new BudgetViewModel());
     }
 }
