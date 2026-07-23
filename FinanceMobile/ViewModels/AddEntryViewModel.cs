@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace FinanceMobile.ViewModels
 {
@@ -112,21 +113,24 @@ namespace FinanceMobile.ViewModels
         [RelayCommand]
         private void Add()
         {
-            // TODO: сохранить операцию в БД через FinanceMobile.Databases.Operation
-            //RequestClose?.Invoke();
-
-            var periodInDays = -1;
-            var isPlanned = false;
-            if (IsRecurring)
+            // Безопасный код для билда, потом удалить try/catch (Содержимое оставить). (Exceptions в билде могут сломать приложение)            
+            try
             {
-                periodInDays = daysInDatePeriod[SelectedPeriod];
+                var periodInDays = -1;
+                var isPlanned = false;
+                if (IsRecurring)
+                {
+                    periodInDays = daysInDatePeriod[SelectedPeriod];
+                }
+                var sectionName = selectedTypeToSectionName[SelectedType];
+                var categoryName = SelectedCategory;
+                var value = double.Parse(Amount);
+                var date = DateTime.Parse(DateInISOFormat);
+                var accID = App.AppBudget.GetAccountID(SelectedAccount);
+                App.AppBudget.AddOperation(sectionName, categoryName, date, accID, value, isPlanned, periodInDays);
             }
-            var sectionName = selectedTypeToSectionName[SelectedType];
-            var categoryName = SelectedCategory;
-            var value = double.Parse(Amount);
-            var date = DateTime.Parse(DateInISOFormat);
-            var accID = App.AppBudget.GetAccountID(SelectedAccount);
-            App.AppBudget.AddOperation(sectionName, categoryName, date, accID, value, isPlanned, periodInDays);
+            catch { }
+            // До сюда
             App.NavigateTo(new BudgetViewModel());
         }
         /*

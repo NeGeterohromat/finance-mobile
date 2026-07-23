@@ -166,6 +166,10 @@ namespace FinanceMobile.DataStructs
 
         public void AddCategory(string sectionName, string categoryName)
         {
+            // Безопасный код для билда, потом удалить. (Exceptions в билде могут сломать приложение)
+            if (sections[sectionName].GetCategoryNames().Contains(categoryName)) return;
+            // До сюда
+
             var section = sections[sectionName];
             section.AddCategory(categoryName);
 
@@ -292,6 +296,8 @@ namespace FinanceMobile.DataStructs
                     operation.EndDate);
             }
 
+            // Пока нет UI для добавления счёта, этот код - пустой. Раскоммментируете, когда появится UI для добавления счетов.
+            /* 
             foreach (var acc in accounts)
             {
                 if (databaseAccountTypesReverse[acc.Type] == AccountType.Deposite)
@@ -304,6 +310,15 @@ namespace FinanceMobile.DataStructs
                     this.accounts[acc.Name] = acc.Balance;
                 }
             }
+            */
+
+            // Заглушка, добавляющая счета
+
+            deposites["депозит1"] = new Deposite("депозит1");
+            deposites["депозит1"].AddOperation(Deposite.Refill, new Operation() { AccountId = "aa", Value = 300, Date = DateTime.Now });
+
+            this.accounts["Карта"] = 1000;
+            this.accounts["Наличные"] = 100;
         }
     }
 }
