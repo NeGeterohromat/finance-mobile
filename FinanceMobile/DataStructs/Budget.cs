@@ -296,12 +296,12 @@ namespace FinanceMobile.DataStructs
             {
                 if (databaseAccountTypesReverse[acc.Type] == AccountType.Deposite)
                 {
-                    AddDeposite(acc.Name);
-                    AddRefillToDeposite(acc.Name, new Operation() { AccountId = acc.Id, Value = acc.Balance, Date = DateTime.Now });
+                    deposites[acc.Name] = new Deposite(acc.Name);
+                    deposites[acc.Name].AddOperation(Deposite.Refill,new Operation() { AccountId = acc.Id, Value = acc.Balance, Date = DateTime.Now });
                 }
                 else
                 {
-                    AddAccount(acc.Name,acc.Balance);
+                    this.accounts[acc.Name] = acc.Balance;
                 }
             }
         }
