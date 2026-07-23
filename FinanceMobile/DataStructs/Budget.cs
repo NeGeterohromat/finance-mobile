@@ -183,7 +183,8 @@ namespace FinanceMobile.DataStructs
 
         public string GetAccountID(string name)
         {
-            return databaseService.GetAccount(name).Id;
+            string s = databaseService.GetAccount(name)?.Id ?? "";
+            return s;
         }
 
         public void AddOperation(string sectionName, string categoryName, DateTime date, string accountID, double value, bool isPlanned = false,
@@ -319,6 +320,12 @@ namespace FinanceMobile.DataStructs
 
             this.accounts["Карта"] = 1000;
             this.accounts["Наличные"] = 100;
+            if (GetAccountID("Карта") == "")
+                databaseService.SaveAccount(new Account() { Balance = 1000, Name = "Карта", Type = databaseAccountTypes[AccountType.Card] });
+            if (GetAccountID("депозит1") == "")
+                databaseService.SaveAccount(new Account() { Balance = 0, Name = "депозит1", Type = databaseAccountTypes[AccountType.Deposite] });
+            if (GetAccountID("Наличные") == "")
+                databaseService.SaveAccount(new Account() { Balance = 100, Name = "Наличные", Type = databaseAccountTypes[AccountType.Cash] });
         }
     }
 }
